@@ -258,7 +258,10 @@ class HarnessPickEnv(gym.Env):
         terms = {"progress": r_progress, "stress": p_stress, "collision": p_collision,
                  "smooth": p_smooth, "path": p_path, "ctrl": p_ctrl, "time": p_time}
 
-        # bookkeeping for next step's smoothness / path terms
+        # bookkeeping for next step's progress / smoothness / path terms
+        self._prev_dist = dist          # <-- ESSENTIAL: progress must be a PER-STEP delta.
+                                        #     If this is not updated, r_progress pays out the
+                                        #     cumulative (initial - current) distance every step.
         self._prev_action = np.array(action, dtype=float)
         self._prev_gpos = g
         return reward, terms
