@@ -27,7 +27,9 @@ if __name__ == "__main__":
         total_episodes=500,
         max_ep_steps=500,
         detail_every=25,
-        checkpoint_every=50,
+        checkpoint_every=10,   # save policy+buffer every N episodes (crash-safe)
+        resume=True,           # <-- CONTINUE from a previous run if a checkpoint exists
+                               #     (set False, or delete the 3 checkpoint files, to start fresh)
         curriculum=True, curric_window=10, curric_thresh=0.70,
         curric_step=0.10, curric_floor=0.15,
         learning_rate=1e-3, buffer_size=200_000, batch_size=256, gamma=0.99,
