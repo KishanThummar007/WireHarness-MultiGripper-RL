@@ -20,7 +20,9 @@ if __name__ == "__main__":
         max_ep_steps=500,        # 300 was too short: episodes reached 0.2-0.3 m and RAN OUT
                                  #   of time before the scripted handoff could finish the grasp
         detail_every=25,
-        checkpoint_every=50,
+        checkpoint_every=10,   # save policy+buffer every N episodes (crash-safe)
+        resume=True,           # <-- CONTINUE from a previous run if a checkpoint exists
+                               #     (set False, or delete the 3 checkpoint files, to start fresh)
         # curriculum: start with a generous scripted-handoff radius (config.py = 0.80)
         # and tighten it whenever the agent succeeds in >=70% of the last 10 episodes
         curriculum=True, curric_window=10, curric_thresh=0.70,
