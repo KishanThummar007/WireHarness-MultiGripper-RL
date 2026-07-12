@@ -79,13 +79,17 @@ def make_env(render_mode=None):
         approach_radius=0.30,    # RL only has to reach within 0.30 m; scripted control finishes
         # ---- reward weights ----
         stress_source="passive", sigma_ref=1.0,
-        w_progress=10.0, w_stress=5.0, w_coll=0.05,
+        # w_progress must be large enough that moving toward the goal OUT-EARNS the time
+        # penalty. With w_progress=10 and w_time=1, even an optimal policy nets -0.66/step
+        # (good behaviour punished, no gradient). With w_progress=50 it nets +0.75/step.
+        w_progress=50.0, w_stress=5.0, w_coll=0.05,
         # NOTE: w_smooth/w_path/w_ctrl are PENALTIES. If they are large and w_time=0, the agent
         # farms reward by STANDING STILL (all penalties ~0). Keep them small, and always keep
         # w_time > 0 so doing nothing is strictly punished.
         w_smooth=0.05, w_path=0.0, w_ctrl=0.0,
         w_time=1.0,              # constant per-step cost -> idling loses, finishing fast wins
-        success_bonus=50.0,
+        success_bonus=200.0,     # large enough that a successful episode is clearly POSITIVE
+                                 #   (reach ~ +180, idle ~ -300 over a 300-step episode)
         grasp_phases=GRASP_PHASES,
         saved_state=np.load(SNAPSHOT),
         render_mode=render_mode,
