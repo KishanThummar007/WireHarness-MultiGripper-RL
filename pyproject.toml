@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multigripper-harness-env"
+version = "0.1.0"
+description = "A Gymnasium environment for multi-gripper automotive wire-harness picking in MuJoCo."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Kishan Thummar" }]
+keywords = [
+    "reinforcement-learning", "gymnasium", "mujoco", "robotics",
+    "wire-harness", "manipulation", "deformable-objects",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "gymnasium>=1.0",
+    "mujoco>=3.1",
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+train = ["stable-baselines3>=2.0", "matplotlib>=3.7"]
+
+[project.urls]
+Homepage = "https://github.com/KishanThummar007/multigripper-harness-env"
+Repository = "https://github.com/KishanThummar007/multigripper-harness-env"
+Issues = "https://github.com/KishanThummar007/multigripper-harness-env/issues"
+
+[tool.setuptools.packages.find]
+include = ["harness_rl*"]
+
+[tool.setuptools.package-data]
+harness_rl = ["../assets/*.xml", "../assets/*.stl", "../assets/*.npy"]
