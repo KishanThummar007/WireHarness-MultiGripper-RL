@@ -1,0 +1,1689 @@
+<mujoco model="ParallelWires">
+  <extension>
+    <plugin plugin="mujoco.elasticity.cable"/>
+  </extension>
+
+  <extension>
+    <plugin plugin="mujoco.pid">
+      <instance name="pid_gx"><config key="kp" value="2000"/><config key="ki" value="100"/><config key="kd" value="50"/><config key="imax" value="5"/><config key="slewmax" value="10"/></instance>
+      <instance name="pid_gy"><config key="kp" value="2000"/><config key="ki" value="100"/><config key="kd" value="50"/><config key="imax" value="5"/><config key="slewmax" value="10"/></instance>
+      <instance name="pid_gz"><config key="kp" value="15000"/><config key="ki" value="2000"/><config key="kd" value="300"/><config key="imax" value="200"/><config key="slewmax" value="10"/></instance>
+    </plugin>
+  </extension>
+
+  <statistic center="0 0 .3" extent="1"/>
+  <visual>
+    <global elevation="-30"/>
+  </visual>
+
+  <compiler autolimits="true"/>
+  <size njmax="2000" nconmax="500"/>
+
+  <option gravity="0 0 -9.81"/>
+
+  <asset>
+    <mesh name="Large_Gripper" file="001_P33553-Part 3.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P1_B" file="P1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P2_B" file="P2.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P3_B" file="P3.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P4_B" file="P4.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P5_B" file="P5.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P6_B" file="P6.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P7_B" file="P7.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P8_B" file="P8.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P9_B" file="P9.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P10_B" file="P10.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P11_B" file="P11.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P12_B" file="P12.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P13_B" file="P13.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P14_B" file="P14.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P15_B" file="P15.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="P16_B" file="P16.stl" scale="0.002 0.002 0.002"/>
+
+    <!-- <mesh name="origin_baseplate" file="P33553.stl" scale="0.002 0.002 0.002"/> -->
+
+    <mesh name="Sch_A_F_1" file="Schaltbet_A_Finger_1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="Sch_A_F_2" file="Schaltbet_A_Finger_2.stl" scale="0.002 0.002 0.002"/>
+
+    <mesh name="Sch_B_F_1" file="Schaltbet_B_Finger_1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="Sch_B_F_2" file="Schaltbet_B_Finger_2.stl" scale="0.002 0.002 0.002"/>
+
+    <mesh name="TAST_F_1" file="Taststart_Finger_1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="TAST_F_2" file="Taststart_Finger_2.stl" scale="0.002 0.002 0.002"/>
+
+    <mesh name="BED_F_1" file="Bedkom_Finger_1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="BED_F_2" file="Bedkom_Finger_2.stl" scale="0.002 0.002 0.002"/>
+
+    <mesh name="LSREG_F_1" file="Lsregler_Finger_1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="LSREG_F_2" file="Lsregler_Finger_2.stl" scale="0.002 0.002 0.002"/>
+
+    <mesh name="LADE1_A_F_1" file="Lade1_A_Finger_1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="LADE1_A_F_2" file="Lade1_A_Finger_2.stl" scale="0.002 0.002 0.002"/>
+
+    <mesh name="LADE1_B_F_1" file="Lade1_B_Finger_1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="LADE1_B_F_2" file="Lade1_B_Finger_2.stl" scale="0.002 0.002 0.002"/>
+
+    <mesh name="ANT_F_1" file="Antkessy1_Finger_1.stl" scale="0.002 0.002 0.002"/>
+    <mesh name="ANT_F_2" file="Antkessy1_Finger_2.stl" scale="0.002 0.002 0.002"/>
+  </asset>
+
+  <!-- Factor to reality: 150 mm in reality is 0.3 in Mujoco: 1mm = 0.002 -->
+
+  <worldbody>
+    <!-- Light source and ground plane -->
+    <light diffuse=".9 .9 .9" pos="0 0 30" dir="0 0 -1"/>
+    <geom type="plane" size="7.5 5 0.01" rgba="0.9 0.9 0.9 1"/>
+
+    <!-- Boundaries -->
+    <geom type="box" size=".01 5 0.08" pos="7.5 0 0.08" rgba="0.59 0.75 0.22 1" name="right_boundary"/>
+    <geom type="box" size="7.5 0.01 0.08" pos="0 5 0.08" rgba="0.59 0.75 0.22 1" name="upper_boundary"/> 
+    <geom type="box" size="7.5 0.01 0.08" pos="0 -5 0.08" rgba="0.59 0.75 0.22 1" name="lower_boundary"/>
+    <geom type="box" size=".01 5 0.08" pos="-7.5 0 0.08" rgba="0.59 0.75 0.22 1" name="left_boundary"/>
+
+    <!-- ############################################################################################################################## -->
+
+    <!-- <body name="Body_P1" pos="4.9 -0.75 0.75" euler="0 0 180">
+      <geom type="mesh" mesh="P1_B" rgba="0.6549 0.8588 1 1" contype="1" conaffinity="1"/>
+
+      <body name="Body_P2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P2_B" rgba="0.5608 0.9333 0.3725 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P16" pos="5.225 0 3.005" euler="0 179.5 180">
+        <geom type="mesh" mesh="P16_B" rgba="0.2 0.3 0.6 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P3" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P3_B" rgba="0 0 0.9765 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P4" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P4_B" rgba="0.6784 0.6706 0.8745 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P5" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P5_B" rgba="0 1.0000 1.0000 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P6" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P6_B" rgba="0.1 0.7 0.1 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P7" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P7_B" rgba="0.0000 0.4157 0.6980 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P8" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P8_B" rgba="0.0000 0.4157 0.6980 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P9" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P9_B" rgba="0.8824 0.8824 0.8824 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P10" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P10_B" rgba="0.0000 0.4157 0.6980 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P11" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P11_B" rgba="0.9529 0.8157 0.6941 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P12" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P12_B" rgba="0.9529 0.8157 0.6941 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P13" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P13_B" rgba="0.9570 0.0353 0.9537 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P14" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P14_B" rgba="0.9570 0.0353 0.9570 1" contype="1" conaffinity="1"/>
+      </body>
+
+      <body name="Body_P15" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="P15_B" rgba="1.0000 1.0000 0.0000 1" contype="1" conaffinity="1"/>
+      </body>
+    </body> -->
+    
+    
+
+    <body name="Gripping_body" pos="9 0 2" euler="0 0 0">
+      <geom type="mesh" mesh="Large_Gripper" rgba="0.75 0.75 0.75 1"/>
+      <joint name="G_x_slide" type="slide" pos="0 0 0" axis="1 0 0" limited="false" damping="500"/>
+      <joint name="G_y_slide" type="slide" pos="0 0 0" axis="0 1 0" limited="false" damping="500"/>
+      <joint name="G_z_slide" type="slide" pos="0 0 0" axis="0 0 1" limited="false" damping="1000"/>
+      <!-- <joint name="G_z_rotation" type="hinge" pos="0 0 0" axis="0 0 1" limited="true" range="-90 90" damping="1000"/> -->
+
+      <body name="Sch_A_F1" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="Sch_A_F_1" rgba="1 0 0 1" contype="1" conaffinity="1"/>
+        <joint name="Sch_A_F1_slide" type="slide" pos="0 0 0" axis="0.0246 -0.9993 0.0292" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g1_pad1_s1" pos="-7.02125 0.056 -1.4235" size="0.0025"/>
+      </body>
+
+      <body name="Sch_A_F2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="Sch_A_F_2" rgba="1 0 0 1" contype="1" conaffinity="1"/>
+        <joint name="Sch_A_F2_slide" type="slide" pos="0 0 0" axis="0.0246 -0.9993 0.0292" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g1_pad2_s1" pos="-7.02225 0.1 -1.4235" size="0.0025"/>
+      </body>
+
+      <body name="Sch_B_F1" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="Sch_B_F_1" rgba="0 1 0 1" contype="1" conaffinity="1"/>
+        <joint name="Sch_B_F1_slide" type="slide" pos="0 0 0" axis="-0.6657 -0.0154 0.0329" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g2_pad1_s1" pos="-7.0985 0.105 -1.4305" size="0.0025"/>
+      </body>
+
+      <body name="Sch_B_F2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="Sch_B_F_2" rgba="0 1 0 1" contype="1" conaffinity="1"/>
+        <joint name="Sch_B_F2_slide" type="slide" pos="0 0 0" axis="-0.6657 -0.0154 0.0329" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g2_pad2_s1" pos="-7.07 0.105 -1.4305" size="0.0025"/>
+      </body>
+
+      <body name="TAST_F1" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="TAST_F_1" rgba="0 0 1 1" contype="1" conaffinity="1"/>
+        <joint name="TAST_F1_slide" type="slide" pos="0 0 0" axis="0.000072 0.999999 -0.000102" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g3_pad1_s1" pos="-6.8215 0.189 -1.405" size="0.0025" /> <!-- -6.8215 0.189 -1.405 -->
+      </body>
+
+      <body name="TAST_F2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="TAST_F_2" rgba="0 0 1 1" contype="1" conaffinity="1"/>
+        <joint name="TAST_F2_slide" type="slide" pos="0 0 0" axis="0.000072 0.999999 -0.000102" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g3_pad2_s1" pos="-6.8215 0.159 -1.405" size="0.0025"/> <!-- -6.8215 0.159 -1.405 -->
+      </body>
+
+      <body name="BED_F1" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="BED_F_1" rgba="0 0.8 0.8 1" contype="1" conaffinity="1"/>
+        <joint name="BED_F1_slide" type="slide" pos="0 0 0" axis="0.0000046 0.9999999 0.0000063" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g4_pad1_s1" pos="-6.836 0.1125 -1.4025" size="0.0025" />
+      </body>
+
+      <body name="BED_F2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="BED_F_2" rgba="0 0.8 0.8 1" contype="1" conaffinity="1"/>
+        <joint name="BED_F2_slide" type="slide" pos="0 0 0" axis="0.0000046 0.9999999 0.0000063" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g4_pad2_s1" pos="-6.836 0.0705 -1.4025" size="0.0025" />
+      </body>
+
+      <body name="LSREG_F1" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="LSREG_F_1" rgba="0.6 0.4 0.1 1" contype="1" conaffinity="1"/>
+        <joint name="LSREG_F1_slide" type="slide" pos="0 0 0" axis="0.66018 0.00000 0.09278" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g5_pad1_s1" pos="-6.792 -0.179 -1.4075" size="0.0025"/>
+      </body>
+
+      <body name="LSREG_F2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="LSREG_F_2" rgba="0.6 0.4 0.1 1" contype="1" conaffinity="1"/>
+        <joint name="LSREG_F2_slide" type="slide" pos="0 0 0" axis="0.66018 0.00000 0.09278" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site name="g5_pad2_s1" pos="-6.819 -0.179 -1.412" size="0.0025"/>
+      </body>
+
+      <body name="LADE1_A_F1" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="LADE1_A_F_1" rgba="0.6 0.4 0.4 1" contype="1" conaffinity="1"/>
+        <joint name="LADE1_A_F1_slide" type="slide" pos="0 0 0" axis="0.52694 0.00000 -0.84990" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site type="sphere" name="g6_pad1_s1" pos="-6.7535 -0.1485 -1.5685" size="0.0025"/> <!-- -6.7535 -0.1485 -1.5685 0 0 0-->
+      </body>
+
+      <body name="LADE1_A_F2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="LADE1_A_F_2" rgba="0.6 0.4 0.4 1" contype="1" conaffinity="1"/>
+        <joint name="LADE1_A_F2_slide" type="slide" pos="0 0 0" axis="0.52694 0.00000 -0.84990" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site type="sphere" name="g6_pad2_s1" pos="-6.7785 -0.1485 -1.5285" size="0.0025"/> <!-- -6.7785 -0.1485 -1.5285 -0.025 0 0.04-->
+      </body>
+
+      <body name="LADE1_B_F1" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="LADE1_B_F_1" rgba="0.1 0.6 0.4 1" contype="1" conaffinity="1"/>
+        <joint name="LADE1_B_F1_slide" type="slide" pos="0 0 0" axis="-0.0000023 -0.9999999 0.0000038" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site type="sphere" name="g7_pad1_s1" pos="-6.778 -0.106 -1.5535" size="0.0025"/> <!-- -6.778 -0.106 -1.5535 0 0 0.2-->
+      </body>
+
+      <body name="LADE1_B_F2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="LADE1_B_F_2" rgba="0.1 0.6 0.4 1" contype="1" conaffinity="1"/>
+        <joint name="LADE1_B_F2_slide" type="slide" pos="0 0 0" axis="-0.0000023 -0.9999999 0.0000038" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site type="sphere" name="g7_pad2_s1" pos="-6.778 -0.0785 -1.5535" size="0.0025"/> <!-- -6.778 -0.0785 -1.5535 0 0.04 0.2-->
+      </body>
+
+      <body name="ANT_F1" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="ANT_F_1" rgba="0.1 0.4 0.6 1" contype="1" conaffinity="1"/>
+        <joint name="ANT_F1_slide" type="slide" pos="0 0 0" axis="-0.0000023 -0.9999999 0.0000038" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site type="sphere" name="g8_pad1_s1" pos="-6.774 -0.0035 -1.5535 " size="0.0025"/> <!-- -6.774 -0.0035 -1.5535  0 0 0.1-->
+      </body>
+
+      <body name="ANT_F2" pos="0 0 0" euler="0 0 0">
+        <geom type="mesh" mesh="ANT_F_2" rgba="0.1 0.4 0.6 1" contype="1" conaffinity="1"/>
+        <joint name="ANT_F2_slide" type="slide" pos="0 0 0" axis="-0.0000023 -0.9999999 0.0000038" limited="true" range="0 1" damping="500" frictionloss="5" stiffness="10000"/>
+        <site type="sphere" name="g8_pad2_s1" pos="-6.774 0.0425 -1.5535" size="0.0025"/> <!-- -6.774 0.0425 -1.5535 0 0.046 0.1-->
+      </body>
+    </body>
+
+    <!-- ############################################################################################################################## -->
+
+    <!-- Rotation Module Box Tray -->
+    <body name = "Rotary Tray" pos = "0 0 2" >
+      <geom type="box" size="0.3 0.4 0.005" rgba="0.5 1 0.25 0.5"/>
+      <!-- <joint name="RT_x_slide" type="slide" pos="0 0 0" axis="1 0 0" limited="false" damping="150"/>
+      <joint name="RT_y_slide" type="slide" pos="0 0 0" axis="0 1 0" limited="false" damping="150"/>
+      <joint name="RT_z_rotation" type= "hinge" pos="0 0 0" axis="0 0 1" limited="false" damping = "150"/> -->
+
+      <body name="R1" pos="0 -0.1 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R1_cav1"/>
+        <site name="R1C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R2" pos="0.2 0.1 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R2_cav1"/>
+        <site name="R2C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R3" pos="0.2 -0.1 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R3_cav1"/>
+        <site name="R3C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R4" pos="0.2 -0.3 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R4_cav1"/>
+        <site name="R4C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R5" pos="0 -0.3 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R5_cav1"/>
+        <site name="R5C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R6" pos="-0.2 -0.3 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R6_cav1"/>
+        <site name="R6C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R7" pos="-0.2 -0.1 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R7_cav1"/>
+        <site name="R7C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R8" pos="-0.2 0.1 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R8_cav1"/>
+        <site name="R8C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R9" pos="-0.2 0.3 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R9_cav1"/>
+        <site name="R9C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R10" pos="0 0.3 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R10_cav1"/>
+        <site name="R10C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R11" pos="0.2 0.3 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R11_cav1"/>
+        <site name="R11C1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="R12" pos="0 0.1 -0.003" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="R12_cav1"/>
+        <site name="R12C1" pos="0 0 0" size="0.005"/>
+      </body>
+    </body>
+
+    <!-- ############################################################################################################################## -->
+
+    <composite prefix="Wire_Schaltbet_A" type="cable"
+      vertex="0.0000 0.0000 0.0000  0.0398  0.0103 0.0000  0.0796  0.0206 0.0000 
+              0.1194  0.0309 0.0000  0.1592  0.0413 0.0000  0.1991  0.0516 0.0000 
+              0.2389  0.0619 0.0000  0.2787  0.0722 0.0000  0.3185  0.0825 0.0000 
+              0.3583  0.0929 0.0000  0.3981  0.1032 0.0000  0.4380  0.1135 0.0000 
+              0.4778  0.1238 0.0000  0.5176  0.1341 0.0000  0.5574  0.1445 0.0000 
+              0.5972  0.1548 0.0000  0.6370  0.1651 0.0000  0.6769  0.1754 0.0000 
+              0.7167  0.1857 0.0000  0.7565  0.1961 0.0000  0.7963  0.2064 0.0000 
+              0.8361  0.2167 0.0000  0.8759  0.2270 0.0000  0.9158  0.2373 0.0000 
+              0.9556  0.2477 0.0000  0.9954  0.2580 0.0000  1.0353  0.2683 0.0000 
+              1.0751  0.2786 0.0000  1.1149  0.2889 0.0000  1.1548  0.2993 0.0000 
+              1.1946  0.3096 0.0000  1.2344  0.3199 0.0000  1.2743  0.3302 0.0000 
+              1.3141  0.3406 0.0000  1.3539  0.3509 0.0000  1.3937  0.3612 0.0000"
+      offset="0.015 0.01 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.8 0.2 0.1 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_Schaltbet_B" type="cable"
+      vertex="0.0000  0.0000 0.0000  0.0400  0.0000 0.0000  0.0800  0.0000 0.0000 
+              0.1200  0.0000 0.0000  0.1600  0.0000 0.0000  0.2000  0.0000 0.0000 
+              0.2400  0.0000 0.0000  0.2800  0.0000 0.0000  0.3200  0.0000 0.0000 
+              0.3600  0.0000 0.0000  0.4000  0.0000 0.0000  0.4400  0.0000 0.0000 
+              0.4800  0.0000 0.0000  0.5200  0.0000 0.0000  0.5600  0.0000 0.0000 
+              0.6000  0.0000 0.0000  0.6400  0.0000 0.0000  0.6800  0.0000 0.0000 
+              0.7200  0.0000 0.0000  0.7600  0.0000 0.0000  0.8000  0.0000 0.0000 
+              0.8400  0.0000 0.0000  0.8800  0.0000 0.0000  0.9200  0.0000 0.0000 
+              0.9600  0.0000 0.0000  1.0000  0.0000 0.0000  1.0400  0.0000 0.0000 
+              1.0800  0.0000 0.0000  1.1200  0.0000 0.0000  1.1600  0.0000 0.0000 
+              1.2000  0.0000 0.0000  1.2400  0.0000 0.0000  1.2800  0.0000 0.0000 
+              1.3200  0.0000 0.0000  1.3600  0.0000 0.0000  1.4000  0.0000 0.0000 
+              1.4400  0.0000 0.0000  1.4800  0.0000 0.0000  1.5200  0.0000 0.0000 
+              1.5600  0.0000 0.0000  1.6000  0.0000 0.0000  1.6400  0.0000 0.0000"
+      offset="0.015 0 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.2 0.8 0.1 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_TASTSTART" type="cable"
+      vertex="0.0000  0.0000  0.0000   0.0388 -0.0100  0.0000   0.0775 -0.0202  0.0000
+              0.1162 -0.0302  0.0000   0.1549 -0.0402  0.0000   0.1936 -0.0503  0.0000
+              0.2323 -0.0604  0.0000   0.2710 -0.0704  0.0000   0.3098 -0.0805  0.0000
+              0.3484 -0.0906  0.0000   0.3872 -0.1006  0.0000   0.4258 -0.1107  0.0000
+              0.4646 -0.1207  0.0000   0.5032 -0.1308  0.0000   0.5420 -0.1409  0.0000
+              0.5806 -0.1509  0.0000   0.6194 -0.1610  0.0000   0.6581 -0.1711  0.0000
+              0.6968 -0.1811  0.0000   0.7355 -0.1911  0.0000   0.7742 -0.2013  0.0000
+              0.8129 -0.2113  0.0000   0.8516 -0.2213  0.0000   0.8903 -0.2315  0.0000
+              0.9291 -0.2415  0.0000   0.9677 -0.2515  0.0000   1.0065 -0.2616  0.0000
+              1.0452 -0.2717  0.0000   1.0839 -0.2817  0.0000   1.1226 -0.2918  0.0000
+              1.1614 -0.3019  0.0000   1.2001 -0.3119  0.0000   1.2388 -0.3220  0.0000
+              1.2775 -0.3320  0.0000   1.3162 -0.3421  0.0000   1.3549 -0.3522  0.0000
+              1.3936 -0.3622  0.0000   1.4323 -0.3723  0.0000   1.4710 -0.3824  0.0000
+              1.5098 -0.3924  0.0000   1.5486 -0.4025  0.0000"
+      offset="0.015 -0.01 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.1 0.2 0.8 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_BEDKOM" type="cable"
+      vertex="0.0000 0.0000 0.0000  0.0270 -0.0270 0.0000  0.0540 -0.0540 0.0000
+              0.0810 -0.0810 0.0000  0.1080 -0.1080 0.0000  0.1350 -0.1350 0.0000
+              0.1620 -0.1620 0.0000  0.1890 -0.1890 0.0000  0.2160 -0.2160 0.0000
+              0.2430 -0.2430 0.0000  0.2700 -0.2700 0.0000  0.2970 -0.2970 0.0000
+              0.3240 -0.3240 0.0000  0.3510 -0.3510 0.0000  0.3780 -0.3780 0.0000
+              0.4050 -0.4050 0.0000  0.4320 -0.4320 0.0000  0.4590 -0.4590 0.0000
+              0.4860 -0.4860 0.0000  0.5130 -0.5130 0.0000  0.5400 -0.5400 0.0000
+              0.5670 -0.5670 0.0000  0.5940 -0.5940 0.0000  0.6210 -0.6210 0.0000
+              0.6480 -0.6480 0.0000  0.6750 -0.6750 0.0000  0.7020 -0.7020 0.0000
+              0.7290 -0.7290 0.0000  0.7560 -0.7560 0.0000  0.7830 -0.7830 0.0000
+              0.8100 -0.8100 0.0000  0.8370 -0.8370 0.0000  0.8640 -0.8640 0.0000
+              0.8910 -0.8910 0.0000  0.9180 -0.9180 0.0000  0.9450 -0.9450 0.0000
+              0.9720 -0.9720 0.0000  0.9990 -0.9990 0.0000  1.0260 -1.0260 0.0000
+              1.0530 -1.0530 0.0000  1.0820 -1.0820 0.0000"
+      offset="0.005 -0.01 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.1 0.2 0.8 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_SPC_1" type="cable"
+      vertex="0.0000 0.0000 0.0000  0.0000 0.0400 0.0000  0.0000 0.0800 0.0000
+              0.0000 0.1200 0.0000  0.0000 0.1600 0.0000  0.0000 0.2000 0.0000
+              0.0000 0.2400 0.0000  0.0000 0.2800 0.0000  0.0000 0.3200 0.0000
+              0.0000 0.3600 0.0000  0.0000 0.4000 0.0000  0.0000 0.4400 0.0000
+              0.0000 0.4800 0.0000  0.0000 0.5200 0.0000  0.0000 0.5600 0.0000
+              0.0000 0.6000 0.0000  0.0000 0.6400 0.0000  0.0000 0.6800 0.0000
+              0.0000 0.7200 0.0000  0.0000 0.7600 0.0000  0.0000 0.8000 0.0000
+              0.0000 0.8400 0.0000  0.0000 0.8800 0.0000  0.0000 0.9200 0.0000
+              0.0000 0.9600 0.0000  0.0000 1.0000 0.0000  0.0000 1.0400 0.0000
+              0.0000 1.0800 0.0000  0.0000 1.1200 0.0000  0.0000 1.1600 0.0000
+              0.0000 1.2000 0.0000"
+      offset="0.005 0.01 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.8 0.8 0.1 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_SPC_2" type="cable"
+      vertex="0.0000  0.0000 0.0000  0.0000 -0.0400 0.0000  0.0000 -0.0800 0.0000
+              0.0000 -0.1200 0.0000  0.0000 -0.1600 0.0000  0.0000 -0.2000 0.0000
+              0.0000 -0.2400 0.0000  0.0000 -0.2800 0.0000  0.0000 -0.3200 0.0000
+              0.0000 -0.3600 0.0000  0.0000 -0.4000 0.0000  0.0000 -0.4400 0.0000
+              0.0000 -0.4800 0.0000  0.0000 -0.5200 0.0000  0.0000 -0.5600 0.0000
+              0.0000 -0.6000 0.0000  0.0000 -0.6400 0.0000  0.0000 -0.6800 0.0000
+              0.0000 -0.7200 0.0000  0.0000 -0.7600 0.0000  0.0000 -0.8000 0.0000"
+      offset="-0.005 -0.01 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.2 0.7 0.9 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_LSREGLER" type="cable"
+      vertex=" 0.0000  0.0000 0.0000  -0.0200  0.0346 0.0000  -0.0400  0.0693 0.0000
+              -0.0600  0.1039 0.0000  -0.0800  0.1386 0.0000  -0.1000  0.1732 0.0000
+              -0.1200  0.2078 0.0000  -0.1400  0.2425 0.0000  -0.1600  0.2771 0.0000
+              -0.1800  0.3118 0.0000  -0.2000  0.3464 0.0000  -0.2200  0.3810 0.0000
+              -0.2400  0.4157 0.0000  -0.2600  0.4503 0.0000  -0.2800  0.4850 0.0000
+              -0.3000  0.5196 0.0000  -0.3200  0.5542 0.0000  -0.3400  0.5889 0.0000
+              -0.3600  0.6235 0.0000  -0.3800  0.6582 0.0000  -0.4000  0.6928 0.0000
+              -0.4200  0.7274 0.0000  -0.4400  0.7621 0.0000  -0.4600  0.7967 0.0000
+              -0.4800  0.8314 0.0000  -0.5000  0.8660 0.0000  -0.5200  0.9006 0.0000
+              -0.5400  0.9353 0.0000  -0.5600  0.9699 0.0000  -0.5800  1.0046 0.0000
+              -0.6000  1.0392 0.0000  -0.6200  1.0738 0.0000  -0.6400  1.1085 0.0000
+              -0.6600  1.1431 0.0000  -0.6800  1.1778 0.0000  -0.7000  1.2124 0.0000"
+      offset="-0.005 0.01 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.9 0.4 0.2 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_ANTKESSY1" type="cable"
+      vertex=" 0.0000  0.0000 0.0000  -0.0346  0.0200 0.0000  -0.0693  0.0400 0.0000
+              -0.1039  0.0600 0.0000  -0.1386  0.0800 0.0000  -0.1732  0.1000 0.0000
+              -0.2078  0.1200 0.0000  -0.2425  0.1400 0.0000  -0.2771  0.1600 0.0000
+              -0.3118  0.1800 0.0000  -0.3464  0.2000 0.0000  -0.3810  0.2200 0.0000
+              -0.4157  0.2400 0.0000  -0.4503  0.2600 0.0000  -0.4850  0.2800 0.0000
+              -0.5196  0.3000 0.0000  -0.5542  0.3200 0.0000  -0.5889  0.3400 0.0000
+              -0.6235  0.3600 0.0000  -0.6582  0.3800 0.0000  -0.6928  0.4000 0.0000
+              -0.7274  0.4200 0.0000  -0.7621  0.4400 0.0000  -0.7967  0.4600 0.0000
+              -0.8314  0.4800 0.0000  -0.8660  0.5000 0.0000  -0.9006  0.5200 0.0000
+              -0.9353  0.5400 0.0000  -0.9699  0.5600 0.0000  -1.0046  0.5800 0.0000
+              -1.0392  0.6000 0.0000  -1.0738  0.6200 0.0000  -1.1085  0.6400 0.0000
+              -1.1418  0.6600 0.0000"
+      offset="-0.015 0.01 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.2 0.9 0.5 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_LADE1_A" type="cable"
+      vertex=" 0.0000 0.0000 0.0000  -0.0400 0.0000 0.0000  -0.0800 0.0000 0.0000
+              -0.1200 0.0000 0.0000  -0.1600 0.0000 0.0000  -0.2000 0.0000 0.0000
+              -0.2400 0.0000 0.0000  -0.2800 0.0000 0.0000  -0.3200 0.0000 0.0000
+              -0.3600 0.0000 0.0000  -0.4000 0.0000 0.0000  -0.4400 0.0000 0.0000
+              -0.4800 0.0000 0.0000  -0.5200 0.0000 0.0000  -0.5600 0.0000 0.0000
+              -0.6000 0.0000 0.0000  -0.6400 0.0000 0.0000  -0.6800 0.0000 0.0000
+              -0.7200 0.0000 0.0000  -0.7600 0.0000 0.0000  -0.8000 0.0000 0.0000
+              -0.8400 0.0000 0.0000  -0.8800 0.0000 0.0000  -0.9200 0.0000 0.0000
+              -0.9600 0.0000 0.0000  -1.0000 0.0000 0.0000  -1.0400 0.0000 0.0000
+              -1.0800 0.0000 0.0000  -1.1200 0.0000 0.0000  -1.1600 0.0000 0.0000
+              -1.2000 0.0000 0.0000  -1.2400 0.0000 0.0000  -1.2800 0.0000 0.0000
+              -1.3200 0.0000 0.0000  -1.3600 0.0000 0.0000"
+      offset="-0.015 0 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.9 0.5 0.1 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <composite prefix="Wire_LADE1_B" type="cable"
+      vertex=" 0.0000  0.0000 0.0000  -0.0283 -0.0283 0.0000  -0.0566 -0.0566 0.0000
+              -0.0849 -0.0849 0.0000  -0.1132 -0.1132 0.0000  -0.1415 -0.1415 0.0000
+              -0.1698 -0.1698 0.0000  -0.1981 -0.1981 0.0000  -0.2264 -0.2264 0.0000
+              -0.2547 -0.2547 0.0000  -0.2830 -0.2830 0.0000  -0.3113 -0.3113 0.0000
+              -0.3396 -0.3396 0.0000  -0.3679 -0.3679 0.0000  -0.3962 -0.3962 0.0000
+              -0.4245 -0.4245 0.0000  -0.4528 -0.4528 0.0000  -0.4811 -0.4811 0.0000
+              -0.5094 -0.5094 0.0000  -0.5377 -0.5377 0.0000  -0.5660 -0.5660 0.0000
+              -0.5943 -0.5943 0.0000  -0.6226 -0.6226 0.0000  -0.6509 -0.6509 0.0000
+              -0.6792 -0.6792 0.0000  -0.7075 -0.7075 0.0000  -0.7358 -0.7358 0.0000
+              -0.7641 -0.7641 0.0000  -0.7924 -0.7924 0.0000  -0.8207 -0.8207 0.0000
+              -0.8490 -0.8490 0.0000  -0.8773 -0.8773 0.0000  -0.9056 -0.9056 0.0000
+              -0.9339 -0.9339 0.0000  -0.9622 -0.9622 0.0000"
+      offset="-0.015 -0.01 .425" initial="free">
+      <plugin plugin="mujoco.elasticity.cable">
+        <config key="twist" value="1e7"/>
+        <config key="bend" value="4e6"/>
+        <config key="vmax" value="0.005"/>
+      </plugin>
+      <joint kind="main" damping=".02"/>
+      <geom type="capsule" size=".003" rgba="0.7 0.2 0.9 1" condim="3" contype="1" conaffinity="1"/>
+    </composite>
+
+    <!-- ############################################################################################################################## -->
+
+    <!-- Platforms 1 - MODULE BOX SCHALTBET A -->
+    <!-- The difference in position between module box and a connecting upper point 
+          == P1=[0.9038 0.5207 0.5] + P2=[0 0 0.05] so the coordinate of upper point in WCS 
+          would be p3 == [0.9038 0.5207 0.55]  and to move the Module_box towards the tray 
+          target would be taken as coosdinate of 2nd ball/body inside tray [0.2 0 1.997] -->
+    
+    <body name="MODULE_BOX_1" pos="1.4087 0.3712 0.53">
+      <joint name="slide_joint1x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint1y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint1z" type="slide" axis="0 0 1" damping="130"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="1 0 0 1"/>
+      <site name="MB1_S1" pos="0 0 -0.05" size="0.005"/>
+      <body name="P1" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="P1_cav1"/>
+        <site name="P1C1" pos="0 0 0" size="0.005"/>
+      </body>
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod1" pos="1.4087 0.3721 0.455" euler="0 0 0">
+      <joint name="mod1_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod1_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod1_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC1" type="hinge" pos="0 0 0.0375" axis="1 0 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod1_free_joint"/> -->
+      <geom type="box" size="0.02 0.02 0.025" rgba="1 0 0 1" name="module1"/>
+      <site name="MBC1_S1" pos="0 0 0.025" size="0.0025"/>
+      <site name="MBC1_S2" pos="0 0.02 -0.02" size="0.0025"/>
+      <site name="MBC1_S3" pos="0 -0.02 -0.02" size="0.0025"/>
+
+      <body name="p1cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="mod1_cav1"/>
+        <site name="markerp1c1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="p1_relief" pos="0 0 -0.05">
+        <site name="markerp1_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- Platforms 2 - MODULE BOX SCHALTBET B -->
+    <body name="MODULE_BOX_2" pos="1.655 0.0000 0.53">
+      <joint name="slide_joint2x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint2y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint2z" type="slide" axis="0 0 1" damping="130"/>
+      <joint name="hinge_joint_MB2" type="hinge" axis="1 0 0" damping="180"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0 1 0 1"/>
+
+      <site name="MB2_S11" pos="0.02 0.02 -0.05" size="0.0025"/>
+      <site name="MB2_S12" pos="0.02 -0.02 -0.05" size="0.0025"/>
+      <site name="MB2_S21" pos="-0.02 0.02 -0.05" size="0.0025"/>
+      <site name="MB2_S22" pos="-0.02 -0.02 -0.05" size="0.0025"/>
+
+      <body name="P2" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="P2_cav1"/>
+        <site name="P2C1" pos="0 0 0" size="0.0025"/>
+      </body>   
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod2" pos="1.655 0.0000 0.455" euler="0 0 0">
+      <joint name="mod2_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod2_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod2_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC2" type="hinge" pos="0 0 0.0375" axis="1 0 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod2_free_joint"/> -->
+      <geom type="box" size="0.02 0.02 0.025" rgba="0 1 0 1" name="module2"/>
+
+      <site name="MBC2_S11" pos="0.02 0.02 0.025" size="0.0025"/>
+      <site name="MBC2_S12" pos="0.02 -0.02 0.025" size="0.0025"/>
+      <site name="MBC2_S21" pos="-0.02 0.02 0.025" size="0.0025"/>
+      <site name="MBC2_S22" pos="-0.02 -0.02 0.025" size="0.0025"/>
+
+      <site name="MBC2_S2" pos="0.02 0 -0.02" size="0.0025"/>
+      <site name="MBC2_S3" pos="-0.02 0 -0.02" size="0.0025"/>
+
+      <body name="p2cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="mod2_cav1"/>
+        <site name="markerp2c1" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p2_relief" pos="0 0 -0.05">
+        <site name="markerp2_relief" pos="0 0 0" size="0.005"rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- Platforms 3 - MODULE BOX TASTSTART -->
+    <body name="MODULE_BOX_3" pos="1.5636 -0.4125 0.53">
+      <joint name="slide_joint3x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint3y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint3z" type="slide" axis="0 0 1" damping="130"/>
+      <joint name="hinge_joint_MB3" type="hinge" axis="0 1 0" damping="180"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0 0 0.8 1"/>
+      <site name="MB3_S1" pos="0 0 -0.05" size="0.005"/>
+      <body name="P3" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.0025" rgba="0 0 1 1" name="P3_cav1"/>
+        <site name="P3C1" pos="0 0 0" size="0.005"/>
+      </body>   
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod3" pos="1.5636 -0.4125 0.455" euler="0 0 0">
+      <joint name="mod3_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod3_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod3_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC3" type="hinge" pos="0 0 0.0375" axis="0 1 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod3_free_joint"/> -->
+      <geom type="box" size="0.02 0.02 0.025" rgba="0 0 1 1" name="module3"/>
+      <site name="MBC3_S1" pos="0 0 0.025" size="0.0025"/>
+      <site name="MBC3_S2" pos="0 0.02 -0.02" size="0.0025"/>
+      <site name="MBC3_S3" pos="0 -0.02 -0.02" size="0.0025"/>
+
+      <body name="p3cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod3_cav1"/>
+        <site name="markerp3c1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="p3_relief" pos="0 0 -0.05">
+        <site name="markerp3_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- Platforms 4 - MODULE BOX END Plate -->
+    <body name="MODULE_BOX_4" pos="0.0000 0.0000 0.53">
+      <joint name="slide_joint4x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint4y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint4z" type="slide" axis="0 0 1" damping="130"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0.8 0.8 0.8 1"/>
+      <site name="MB4_S1" pos="0 0 -0.05" size="0.005"/>
+      <body name="P4" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="P4_cav1"/>
+        <site name="P4C1" pos="0 0 0" size="0.005"/>
+      </body>      
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod4" pos="0.0000 0.0000 0.455" euler="0 0 0">
+      <joint name="mod4_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod4_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod4_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <!-- <joint type="free" name="mod4_free_joint"/> -->
+      <geom type="box" size="0.03 0.03 0.025" rgba="1 1 1 1" name="module4"/>
+      <site name="MBC4_S1" pos="0 0 0.025" size="0.005"/>
+      <body name="p4cav1" pos="0.015 0.01 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav1"/>
+        <site name="markerp4c1" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav2" pos="0.015 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav2"/>
+        <site name="markerp4c2" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav3" pos="0.015 -0.01 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav3"/>
+        <site name="markerp4c3" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav4" pos="0.005 0.01 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav4"/>
+        <site name="markerp4c4" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav5" pos="0.005 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav5"/>
+        <site name="markerp4c5" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav6" pos="0.005 -0.01 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav6"/>
+        <site name="markerp4c6" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav7" pos="-0.005 0.01 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav7"/>
+        <site name="markerp4c7" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav8" pos="-0.005 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav8"/>
+        <site name="markerp4c8" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav9" pos="-0.005 -0.01 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav9"/>
+        <site name="markerp4c9" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav10" pos="-0.015 0.01 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav10"/>
+        <site name="markerp4c10" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav11" pos="-0.015 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav11"/>
+        <site name="markerp4c11" pos="0 0 0" size="0.005"/>
+      </body>
+      <body name="p4cav12" pos="-0.015 -0.01 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod4_cav12"/>
+        <site name="markerp4c12" pos="0 0 0" size="0.005"/>
+      </body>
+    </body>
+
+    <!-- Platforms 5 - MODULE BOX BEDKOM -->
+    <body name="MODULE_BOX_5" pos="1.087 -1.092 0.53">
+      <joint name="slide_joint5x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint5y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint5z" type="slide" axis="0 0 1" damping="130"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0 0.8 0.8 1"/>
+      <site name="MB5_S1" pos="0 0 -0.05" size="0.005"/>
+      <body name="P5" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="P5_cav1"/>
+        <site name="P5C1" pos="0 0 0" size="0.005"/>
+      </body>   
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod5" pos="1.087 -1.092 0.455" euler="0 0 0">
+      <joint name="mod5_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod5_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod5_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC5" type="hinge" pos="0 0 0.0375" axis="0 1 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod5_free_joint"/> -->
+      <geom type="box" size="0.02 0.02 0.025" rgba="0 0.8 0.8 1" name="module5"/>
+      <site name="MBC5_S1" pos="0 0 0.025" size="0.005"/>
+      <site name="MBC5_S2" pos="0 0.02 -0.02" size="0.0025"/>
+      <site name="MBC5_S3" pos="0 -0.02 -0.02" size="0.0025"/>
+
+      <body name="p5cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="mod5_cav1"/>
+        <site name="markerp5c1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="p5_relief" pos="0 0 -0.05">
+        <site name="markerp5_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- Platforms 6 - MODULE BOX SPC_1 -->
+    <body name="MODULE_BOX_6" pos="0.005 1.21 0.53">
+      <joint name="slide_joint6x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint6y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint6z" type="slide" axis="0 0 1" damping="130"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0.8 0 0.8 1"/>
+      <site name="MB6_S1" pos="0 0 -0.05" size="0.005"/>
+      <body name="P6" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="P6_cav1"/>
+        <site name="P6C1" pos="0 0 0" size="0.005"/>
+      </body>   
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod6" pos="0.005 1.21 0.455" euler="0 0 0">
+      <joint name="mod6_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod6_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod6_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC6" type="hinge" pos="0 0 0.0375" axis="0 1 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod6_free_joint"/> -->
+      <geom type="box" size="0.025 0.025 0.025" rgba="0.8 0 0.8 1" name="module6"/>
+      <site name="MBC6_S1" pos="0 0 0.025" size="0.005"/>
+      <site name="MBC6_S2" pos="0.025 0 0" size="0.005"/>
+      <site name="MBC6_S3" pos="-0.025 0 0" size="0.005"/>
+
+      <body name="p6cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod6_cav1"/>
+        <site name="markerp6c1" pos="0 0 0" size="0.005"/>
+      </body>
+    
+      <body name="p6_relief" pos="0 0 -0.05">
+        <site name="markerp6_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>    
+    </body>
+
+    <!-- Platforms 7 - MODULE BOX SPC_2 -->
+    <body name="MODULE_BOX_7" pos="-0.005 -0.81 0.53">
+      <joint name="slide_joint7x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint7y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint7z" type="slide" axis="0 0 1" damping="130"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0.8 0.8 0 1"/>
+      <site name="MB7_S1" pos="0 0 -0.05" size="0.005"/>
+      <body name="P7" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="P7_cav1"/>
+        <site name="P7C1" pos="0 0 0" size="0.005"/>
+      </body>   
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod7" pos="-0.005 -0.81 0.455" euler="0 0 0">
+      <joint name="mod7_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod7_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod7_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC7" type="hinge" pos="0 0 0.0375" axis="0 1 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod7_free_joint"/> -->
+      <geom type="box" size="0.025 0.025 0.025" rgba="0.8 0.8 0 1" name="module7"/>
+      <site name="MBC7_S1" pos="0 0 0.025" size="0.005"/>
+      <site name="MBC7_S2" pos="0.025 0 0" size="0.005"/>
+      <site name="MBC7_S3" pos="-0.025 0 0" size="0.005"/>
+
+      <body name="p7cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0 0 1 1" name="mod7_cav1"/>
+        <site name="markerp7c1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="p7_relief" pos="0 0 -0.05">
+        <site name="markerp7_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- Platforms 8 - MODULE BOX LSREGLER -->
+    <body name="MODULE_BOX_8" pos="-0.705 1.2224 0.53">
+      <joint name="slide_joint8x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint8y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint8z" type="slide" axis="0 0 1" damping="130"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0.6 0.4 0.1 1"/>
+      <site name="MB8_S1" pos="0 0 -0.05" size="0.005"/>
+      <body name="P8" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="P8_cav1"/>
+        <site name="P8C1" pos="0 0 0" size="0.005"/>
+      </body>
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod8" pos="-0.705 1.2224 0.455" euler="0 0 0">
+      <joint name="mod8_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod8_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod8_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC8" type="hinge" pos="0 0 0.0375" axis="0 1 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod8_free_joint"/> -->
+      <geom type="box" size="0.02 0.02 0.025" rgba="0.6 0.4 0.1 1" name="module8"/>
+      <site name="MBC8_S1" pos="0 0 0.025" size="0.005"/>
+      <site name="MBC8_S2" pos="0.02 0 -0.02" size="0.0025"/>
+      <site name="MBC8_S3" pos="-0.02 0 -0.02" size="0.0025"/>
+
+      <body name="p8cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="mod8_cav1"/>
+        <site name="markerp8c1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="p8_relief" pos="0 0 -0.05">
+        <site name="markerp8_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- Platforms 9 - MODULE BOX ANTKESSY_1 -->
+    <body name="MODULE_BOX_9" pos="-1.1568 0.67 0.53"  euler="0 0 0">
+      <joint name="slide_joint9x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint9y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint9z" type="slide" axis="0 0 1" damping="130"/>
+      <joint name="hinge_joint_MB9" type="hinge" axis="0 1 0" damping="180"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0.1 0.4 0.6 1"/>
+
+      <site name="MB9_S11" pos="0.02 0.02 -0.05" size="0.0025"/>
+      <site name="MB9_S12" pos="0.02 -0.02 -0.05" size="0.0025"/>
+      <site name="MB9_S21" pos="-0.02 0.02 -0.05" size="0.0025"/>
+      <site name="MB9_S22" pos="-0.02 -0.02 -0.05" size="0.0025"/>
+
+      <body name="P9" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="P9_cav1"/>
+        <site name="P9C1" pos="0 0 0" size="0.005"/>
+      </body>
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod9" pos="-1.1568 0.67 0.455" euler="0 0 0">
+      <joint name="mod9_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod9_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod9_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC9" type="hinge" pos="0 0 0.0375" axis="0 1 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod9_free_joint"/> -->
+      <geom type="box" size="0.02 0.02 0.025" rgba="0.1 0.4 0.6 1" name="module9"/>
+
+      <site name="MBC9_S11" pos="0.02 0.02 0.025" size="0.0025"/>
+      <site name="MBC9_S12" pos="0.02 -0.02 0.025" size="0.0025"/>
+      <site name="MBC9_S21" pos="-0.02 0.02 0.025" size="0.0025"/>
+      <site name="MBC9_S22" pos="-0.02 -0.02 0.025" size="0.0025"/>
+
+      <site name="MBC9_S2" pos="0 0.02 -0.02" size="0.0025"/>
+      <site name="MBC9_S3" pos="0 -0.02 -0.02" size="0.0025"/>
+
+      <body name="p9cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="mod9_cav1"/>
+        <site name="markerp9c1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="p9_relief" pos="0 0 -0.05">
+        <site name="markerp9_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- Platforms 10 - MODULE BOX LADE1_A -->
+    <body name="MODULE_BOX_10" pos="-1.375 0 0.53" euler="0 0 0">
+      <joint name="slide_joint10x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint10y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint10z" type="slide" axis="0 0 1" damping="130"/>
+      <joint name="hinge_joint_MB10" type="hinge" axis="0 1 0" damping="180"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0.6 0.4 0.4 1"/>
+
+      <site name="MB10_S11" pos="0.02 0.02 -0.05" size="0.0025"/>
+      <site name="MB10_S12" pos="0.02 -0.02 -0.05" size="0.0025"/>
+      <site name="MB10_S21" pos="-0.02 0.02 -0.05" size="0.0025"/>
+      <site name="MB10_S22" pos="-0.02 -0.02 -0.05" size="0.0025"/>
+
+      <body name="P10" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="P10_cav1"/>
+        <site name="P10C1" pos="0 0 0" size="0.005"/>
+      </body>
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod10" pos="-1.375 0 0.455" euler="0 0 0">
+      <joint name="mod10_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod10_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod10_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC10" type="hinge" pos="0 0 0.0375" axis="0 1 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod10_free_joint"/> -->
+      <geom type="box" size="0.02 0.02 0.025" rgba="0.6 0.4 0.4 1" name="module10"/>
+      
+      <site name="MBC10_S11" pos="0.02 0.02 0.025" size="0.0025"/>
+      <site name="MBC10_S12" pos="0.02 -0.02 0.025" size="0.0025"/>
+      <site name="MBC10_S21" pos="-0.02 0.02 0.025" size="0.0025"/>
+      <site name="MBC10_S22" pos="-0.02 -0.02 0.025" size="0.0025"/>
+
+      <site name="MBC10_S2" pos="0.02 0 -0.02" size="0.0025"/>
+      <site name="MBC10_S3" pos="-0.02 0 -0.02" size="0.0025"/>
+
+      <body name="p10cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="mod10_cav1"/>
+        <site name="markerp10c1" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+
+      <body name="p10_relief" pos="0 0 -0.05">
+        <site name="markerp10_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- Platforms 11 - MODULE BOX LADE1_B -->
+    <body name="MODULE_BOX_11" pos="-0.9772 -0.9722 0.53" euler="0 0 0">
+      <joint name="slide_joint11x" type="slide" axis="1 0 0" damping="130"/>
+      <joint name="slide_joint11y" type="slide" axis="0 1 0" damping="130"/>
+      <joint name="slide_joint11z" type="slide" axis="0 0 1" damping="130"/>
+      <joint name="hinge_joint_MB11" type="hinge" axis="0 1 0" damping="100"/>
+      <geom type="box" size="0.08 .08 0.05" rgba="0.1 0.6 0.4 1"/>
+
+      <site name="MB11_S11" pos="0.02 0.02 -0.05" size="0.0025"/>
+      <site name="MB11_S12" pos="0.02 -0.02 -0.05" size="0.0025"/>
+      <site name="MB11_S21" pos="-0.02 0.02 -0.05" size="0.0025"/>
+      <site name="MB11_S22" pos="-0.02 -0.02 -0.05" size="0.0025"/>
+
+      <body name="P11" pos="0 0 0.05" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="P11_cav1"/>
+        <site name="P11C1" pos="0 0 0" size="0.005"/>
+      </body>
+    </body>
+
+    <!-- Connector under the Module Box -->
+    <body name="mod11" pos="-0.9772 -0.9722 0.455" euler="0 0 0">
+      <joint name="mod11_slide_x" type="slide" axis="1 0 0" damping=".5"/>
+      <joint name="mod11_slide_y" type="slide" axis="0 1 0" damping=".5"/>
+      <joint name="mod11_slide_z" type="slide" axis="0 0 1" damping=".5"/>
+      <joint name="hinge_joint_MBC11" type="hinge" pos="0 0 0.0375" axis="0 1 0" damping="5.0" range="-90 90"/>
+      <!-- <joint type="free" name="mod11_free_joint"/> -->
+      <geom type="box" size="0.02 0.02 0.025" rgba="0.1 0.6 0.4 1" name="module11"/>
+      <site name="MBC11_S11" pos="0.02 0.02 0.025" size="0.0025"/>
+      <site name="MBC11_S12" pos="0.02 -0.02 0.025" size="0.0025"/>
+      <site name="MBC11_S21" pos="-0.02 0.02 0.025" size="0.0025"/>
+      <site name="MBC11_S22" pos="-0.02 -0.02 0.025" size="0.0025"/>
+
+      <site name="MBC11_S2" pos="0 0.02 -0.02" size="0.0025"/>
+      <site name="MBC11_S3" pos="0 -0.02 -0.02" size="0.0025"/>
+
+      <body name="p11cav1" pos="0 0 -0.03" euler="0 0 0">
+        <geom type="sphere" size="0.005" rgba="0.5 0.5 0.5 1" name="mod11_cav1"/>
+        <site name="markerp11c1" pos="0 0 0" size="0.005"/>
+      </body>
+
+      <body name="p11_relief" pos="0 0 -0.05">
+        <site name="markerp11_relief" pos="0 0 0" size="0.005" rgba="1 1 1 0"/>
+      </body>
+    </body>
+
+    <!-- ########################################################################################################################################################## -->
+
+    <body name = "Sch_A_P1" pos="0.9823 0.2607 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_a_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Sch_A_P2" pos="0.7892 0.2106 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_a_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Sch_A_P3" pos="0.5956 0.1605 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_a_p3" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Sch_A_Re" pos="1.3689  0.3609 0.425">     <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 0 0 0"/>   
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_a_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "Sch_B_P1" pos="1.215 0.0 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_b_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Sch_B_P2" pos="1.015 0.0 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_b_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Sch_B_P3" pos="0.815 0.0 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_b_p3" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Sch_B_P4" pos="0.615 0.0 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_b_p4" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Sch_B_Re" pos="1.6150  0.0000 0.425">     <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Sch_b_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "Tast_P1" pos="1.1764 -0.3118 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Tast_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Tast_P2" pos="0.9828 -0.2615 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Tast_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Tast_P3" pos="0.7893 -0.2113 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Tast_p3" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Tast_P4" pos="0.5957 -0.1609 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Tast_p4" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Tast_Re" pos="1.5248 -0.4024 0.425">         <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Tast_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "Bed_P1" pos="0.8183 -0.8233 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Bed_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Bed_P2" pos="0.6768 -0.6818 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Bed_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Bed_P3" pos="0.5355 -0.5405 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Bed_p3" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Bed_P4" pos="0.3940 -0.3990 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Bed_p4" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "Bed_Re" pos="1.0580 -1.0630 0.425">            <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="Bed_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "SPC_1_P1" pos="0.005 0.81 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="SPC_1_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "SPC_1_P2" pos="0.005 0.61 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="SPC_1_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "SPC_1_Re" pos="0.0050 1.1700 0.425">             <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="SPC_1_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "SPC_2_P1" pos="-0.005 -0.61 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="SPC_2_p1" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "SPC_2_Re" pos="-0.0050 -0.770 0.425">              <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="SPC_2_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "LS_P1" pos="-0.5050 0.8760 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LS_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LS_P2" pos="-0.4050 0.7028 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LS_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LS_P3" pos="-0.3050 0.5296 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LS_p3" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LS_Re" pos="-0.6850  1.1878 0.425">                  <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LS_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "ANT_P1" pos="-0.8973 0.5194 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="ANT_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "ANT_P2" pos="-0.7068 0.4094 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="ANT_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "ANT_P3" pos="-0.5336 0.3094 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="ANT_p3" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "ANT_Re" pos="-1.1235  0.6500 0.425">                    <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="ANT_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "LADE_A_P1" pos="-1.035 0.0 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LADE_A_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LADE_A_P2" pos="-0.815 0.0 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LADE_A_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LADE_A_P3" pos="-0.615 0.0 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LADE_A_p3" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LADE_A_Re" pos="-1.3350 0.0000 0.425">                   <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LADE_A_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+    <body name = "LADE_B_P1" pos="-0.7368 -0.7318 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LADE_B_p1" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LADE_B_P2" pos="-0.5812 -0.5762 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LADE_B_p2" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LADE_B_P3" pos="-0.4398 -0.4348 0.425">
+      <geom type="sphere" size="0.005"  rgba="1 1 0 1"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LADE_B_p3" pos="0 0 0" euler="0 0 0"/>
+    </body>
+
+    <body name = "LADE_B_Re" pos="-0.9489 -0.9439 0.425">                <!--RELIEF BODY -->
+      <geom type="sphere" size="0.0025"  rgba="1 1 0 0"/>
+      <joint type="free" damping= ".15"/>
+      <site name="LADE_B_re" pos="0 0 0" euler="0 0 0" rgba="0 0 0 0"/>
+    </body>
+
+  </worldbody>
+
+    <!-- ############################################################################################################################## -->
+
+  <equality>
+    <connect name="connect_SCH_A_start_to_P4" active="true" body1="Wire_Schaltbet_AB_first" body2="p4cav1" anchor="0 0 0"/>     <!-- 00 -->
+    <connect name="connect_SCH_A_end_to_P1" active="true" body1="p1cav1" body2="Wire_Schaltbet_AB_last" anchor="0 0 0" solimp="0.75 0.75 0.0001" solref="0.002 1"/>        <!-- 01 -->                                         <!-- 01 -->
+
+    <connect name="connect_SCH_B_start_to_P4" active="true" body1="Wire_Schaltbet_BB_first" body2="p4cav2" anchor="0 0 0"/>     <!-- 02 -->
+    <connect name="connect_SCH_B_end_to_P2" active="true" body1="p2cav1" body2="Wire_Schaltbet_BB_last" anchor="0 0 0" solimp="0.75 0.75 0.0001" solref="0.002 1"/>        <!-- 03 -->
+
+    <connect name="connect_TAST_start_to_P4" active="true" body1="Wire_TASTSTARTB_first" body2="p4cav3" anchor="0 0 0"/>        <!-- 04 -->
+    <connect name="connect_TAST_end_to_P3" active="true" body1="p3cav1" body2="Wire_TASTSTARTB_last" anchor="0 0 0" solimp="0.50 0.50 0.0001" solref="0.002 1"/>           <!-- 05 -->
+
+    <connect name="connect_BED_start_to_P4" active="true" body1="Wire_BEDKOMB_first" body2="p4cav6" anchor="0 0 0"/>           <!-- 06 -->
+    <connect name="connect_BED_end_to_P5" active="true" body1="p5cav1" body2="Wire_BEDKOMB_last" anchor="0 0 0"  solimp="0.75 0.75 0.0001" solref="0.002 1"/>              <!-- 07 -->
+
+    <connect name="connect_S1_start_to_P4" active="true" body1="Wire_SPC_1B_first" body2="p4cav4" anchor="0 0 0"/>              <!-- 08 -->
+    <connect name="connect_S1_end_to_P6" active="true" body1="p6cav1" body2="Wire_SPC_1B_last" anchor="0 0 0" solimp="0.75 0.75 0.0001" solref="0.002 1"/>                 <!-- 09 -->
+
+    <connect name="connect_S2_start_to_P4" active="true" body1="Wire_SPC_2B_first" body2="p4cav9" anchor="0 0 0"/>              <!-- 10 -->
+    <connect name="connect_S2_end_to_P7" active="true" body1="p7cav1" body2="Wire_SPC_2B_last" anchor="0 0 0" solimp="0.75 0.75 0.0001" solref="0.002 1"/>                 <!-- 11 -->
+
+    <connect name="connect_LS_start_to_P4" active="true" body1="Wire_LSREGLERB_first" body2="p4cav7" anchor="0 0 0"/>           <!-- 12 -->
+    <connect name="connect_LS_end_to_P8" active="true" body1="p8cav1" body2="Wire_LSREGLERB_last" anchor="0 0 0" solimp="0.75 0.75 0.0001" solref="0.002 1"/>              <!-- 13 -->
+
+    <connect name="connect_ANT_start_to_P4" active="true" body1="Wire_ANTKESSY1B_first" body2="p4cav10" anchor="0 0 0"/>        <!-- 14 -->
+    <connect name="connect_ANT_end_to_P9" active="true" body1="p9cav1" body2="Wire_ANTKESSY1B_last" anchor="0 0 0" solimp="0.50 0.50 0.0001" solref="0.002 1"/>            <!-- 15 -->
+
+    <connect name="connect_LA_start_to_P4" active="true" body1="Wire_LADE1_AB_first" body2="p4cav11" anchor="0 0 0"/>           <!-- 16 -->
+    <connect name="connect_LA_end_to_P10" active="true" body1="p10cav1" body2="Wire_LADE1_AB_last" anchor="0 0 0" solimp="0.50 0.50 0.0001" solref="0.002 1"/>             <!-- 17 -->
+
+    <connect name="connect_LB_start_to_P4" active="true" body1="Wire_LADE1_BB_first" body2="p4cav12" anchor="0 0 0"/>           <!-- 18 -->
+    <connect name="connect_LB_end_to_P11" active="true" body1="p11cav1" body2="Wire_LADE1_BB_last" anchor="0 0 0" solimp="0.50 0.50 0.0001" solref="0.002 1"/>             <!-- 19 -->
+
+    <connect name="MB1_MBC1" active="true" site1="MB1_S1" site2="MBC1_S1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>         <!-- 20 -->
+    <connect name="MB2_MBC1" active="true" site1="MB2_S11" site2="MBC2_S11" solimp="0.99 0.999 0.0001" solref="0.002 1"/>       <!-- 21 -->
+    <connect name="MB3_MBC1" active="true" site1="MB3_S1" site2="MBC3_S1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>         <!-- 22 -->
+    <connect name="MB4_MBC1" active="true" site1="MB4_S1" site2="MBC4_S1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>         <!-- 23 -->
+    <connect name="MB5_MBC1" active="true" site1="MB5_S1" site2="MBC5_S1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>         <!-- 24 -->
+    <connect name="MB6_MBC1" active="true" site1="MB6_S1" site2="MBC6_S1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>         <!-- 25 -->
+    <connect name="MB7_MBC1" active="true" site1="MB7_S1" site2="MBC7_S1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>         <!-- 26 -->
+    <connect name="MB8_MBC1" active="true" site1="MB8_S1" site2="MBC8_S1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>         <!-- 27 -->
+    <connect name="MB9_MBC1" active="true" site1="MB9_S11" site2="MBC9_S11" solimp="0.99 0.999 0.0001" solref="0.002 1"/>       <!-- 28 -->
+    <connect name="MB10_MBC1" active="true" site1="MB10_S11" site2="MBC10_S11" solimp="0.99 0.999 0.0001" solref="0.002 1"/>    <!-- 29 -->
+    <connect name="MB11_MBC1" active="true" site1="MB11_S11" site2="MBC11_S11" solimp="0.99 0.999 0.0001" solref="0.002 1"/>    <!-- 3₀ -->
+
+    <weld name="bundle_Sch_a_p1" body2="Sch_A_P1" body1="Wire_Schaltbet_AB_24" anchor="0 0 0"/>         <!-- 31 -->
+    <weld name="bundle_Sch_a_p2" body2="Sch_A_P2" body1="Wire_Schaltbet_AB_19" anchor="0 0 0"/>         <!-- 32 -->
+    <weld name="bundle_Sch_a_p3" body2="Sch_A_P3" body1="Wire_Schaltbet_AB_14" anchor="0 0 0"/>         <!-- 33 -->
+
+    <weld name="bundle_Sch_b_p1" body2="Sch_B_P1" body1="Wire_Schaltbet_BB_29" anchor="0 0 0"/>         <!-- 34 -->
+    <weld name="bundle_Sch_b_p2" body2="Sch_B_P2" body1="Wire_Schaltbet_BB_24" anchor="0 0 0"/>         <!-- 35 -->
+    <weld name="bundle_Sch_b_p3" body2="Sch_B_P3" body1="Wire_Schaltbet_BB_19" anchor="0 0 0"/>         <!-- 36 -->
+    <weld name="bundle_Sch_b_p4" body2="Sch_B_P4" body1="Wire_Schaltbet_BB_14" anchor="0 0 0"/>         <!-- 37 -->
+
+    <weld name="bundle_Tast_p1" body2="Tast_P1" body1="Wire_TASTSTARTB_30" anchor="0 0 0"/>             <!-- 38 -->
+    <weld name="bundle_Tast_p2" body2="Tast_P2" body1="Wire_TASTSTARTB_25" anchor="0 0 0"/>             <!-- 39 -->
+    <weld name="bundle_Tast_p3" body2="Tast_P3" body1="Wire_TASTSTARTB_20" anchor="0 0 0"/>             <!-- 40 -->
+    <weld name="bundle_Tast_p4" body2="Tast_P4" body1="Wire_TASTSTARTB_15" anchor="0 0 0"/>             <!-- 41 -->
+
+    <weld name="bundle_Bed_p1" body2="Bed_P1" body1="Wire_BEDKOMB_30" anchor="0 0 0"/>                  <!-- 42 -->
+    <weld name="bundle_Bed_p2" body2="Bed_P2" body1="Wire_BEDKOMB_24" anchor="0 0 0"/>                  <!-- 43 -->
+    <weld name="bundle_Bed_p3" body2="Bed_P3" body1="Wire_BEDKOMB_19" anchor="0 0 0"/>                  <!-- 44 -->
+    <weld name="bundle_Bed_p4" body2="Bed_P4" body1="Wire_BEDKOMB_14" anchor="0 0 0"/>                  <!-- 45 -->
+
+    <weld name="bundle_SPC_1_p1" body2="SPC_1_P1" body1="Wire_SPC_1B_19" anchor="0 0 0"/>               <!-- 46 -->
+    <weld name="bundle_SPC_1_p2" body2="SPC_1_P2" body1="Wire_SPC_1B_14" anchor="0 0 0"/>               <!-- 47 -->
+    <weld name="bundle_SPC_2_p1" body2="SPC_2_P1" body1="Wire_SPC_2B_14" anchor="0 0 0"/>               <!-- 48 -->
+
+    <weld name="bundle_LS_p1" body2="LS_P1" body1="Wire_LSREGLERB_24" anchor="0 0 0"/>                  <!-- 49 -->
+    <weld name="bundle_LS_p2" body2="LS_P2" body1="Wire_LSREGLERB_19" anchor="0 0 0"/>                  <!-- 50 -->
+    <weld name="bundle_LS_p3" body2="LS_P3" body1="Wire_LSREGLERB_14" anchor="0 0 0"/>                  <!-- 51 -->
+
+    <weld name="bundle_ANT_p1" body2="ANT_P1" body1="Wire_ANTKESSY1B_25" anchor="0 0 0" solimp="0.9 0.85 0.001" solref="0.002 1"/>               <!-- 52 -->
+    <weld name="bundle_ANT_p2" body2="ANT_P2" body1="Wire_ANTKESSY1B_19" anchor="0 0 0"/>               <!-- 53 -->
+    <weld name="bundle_ANT_p3" body2="ANT_P3" body1="Wire_ANTKESSY1B_14" anchor="0 0 0"/>               <!-- 54 -->
+
+    <weld name="bundle_LADE_B_p1" body2="LADE_B_P1" body1="Wire_LADE1_BB_25" anchor="0 0 0" solimp="0.9 0.85 0.001" solref="0.002 1"/>           <!-- 55 -->
+    <weld name="bundle_LADE_B_p2" body2="LADE_B_P2" body1="Wire_LADE1_BB_19" anchor="0 0 0"/>           <!-- 56 -->
+    <weld name="bundle_LADE_B_p3" body2="LADE_B_P3" body1="Wire_LADE1_BB_14" anchor="0 0 0"/>           <!-- 57 -->
+
+    <weld name="bundle_LADE_A_p1" body2="LADE_A_P1" body1="Wire_LADE1_AB_25" anchor="0 0 0" solimp="0.9 0.85 0.001" solref="0.002 1"/>           <!-- 58 -->
+    <weld name="bundle_LADE_A_p2" body2="LADE_A_P2" body1="Wire_LADE1_AB_19" anchor="0 0 0"/>           <!-- 59 -->
+    <weld name="bundle_LADE_A_p3" body2="LADE_A_P3" body1="Wire_LADE1_AB_14" anchor="0 0 0"/>           <!-- 60 -->
+
+    <connect name="R1C1_MB_11" active="false" site1="P11C1" site2="R1C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>          <!-- 61 -->
+    <connect name="R12C1_MB_1" active="false" site1="P1C1" site2="R12C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>          <!-- 62 -->
+    <connect name="R2C1_MB_2" active="false" site1="P2C1" site2="R2C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>            <!-- 63 -->
+    <connect name="R11C1_MB_3" active="false" site1="P3C1" site2="R11C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>          <!-- 64 -->
+    <connect name="R10C1_MB_5" active="false" site1="P5C1" site2="R10C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>          <!-- 65 -->
+    <connect name="R7C1_MB_6" active="false" site1="P6C1" site2="R7C1"/>            <!-- 66 -->
+    <connect name="R5C1_MB_7" active="false" site1="P7C1" site2="R5C1"/>            <!-- 67 -->
+    <connect name="R6C1_MB_4" active="false" site1="P4C1" site2="R6C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>            <!-- 68 -->
+    <connect name="R8C1_MB_10" active="false" site1="P10C1" site2="R8C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>          <!-- 69 -->
+    <connect name="R4C1_MB_9" active="false" site1="P9C1" site2="R4C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>            <!-- 70 -->
+    <connect name="R3C1_MB_8" active="false" site1="P8C1" site2="R3C1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>            <!-- 71 -->
+
+    <connect name="Sch_B_1_Tast_1" active="false" site1="Sch_b_p1" site2="Tast_p1"/>            <!-- 72 -->
+    <connect name="Sch_B_1_Bed_1" active="false" site1="Sch_b_p1" site2="Bed_p1"/>              <!-- 73 -->
+    <connect name="Tast_1_Bed_1" active="false" site1="Tast_p1" site2="Bed_p1"/>                <!-- 74 -->
+
+    <connect name="Sch_B_2_Tast_2" active="false" site1="Sch_b_p2" site2="Tast_p2"/>            <!-- 75 -->
+    <connect name="Sch_B_2_Bed_2" active="false" site1="Sch_b_p2" site2="Bed_p2"/>              <!-- 76 -->
+    <connect name="Tast_2_Bed_2" active="false" site1="Tast_p2" site2="Bed_p2"/>                <!-- 77 -->
+
+    <connect name="Sch_B_3_Tast_3" active="false" site1="Sch_b_p3" site2="Tast_p3"/>            <!-- 78 -->
+    <connect name="Sch_B_3_Bed_3" active="false" site1="Sch_b_p3" site2="Bed_p3"/>              <!-- 79 -->
+    <connect name="Tast_3_Bed_3" active="false" site1="Tast_p3" site2="Bed_p3"/>                <!-- 80 -->
+
+    <connect name="Sch_B_4_Tast_4" active="false" site1="Sch_b_p4" site2="Tast_p4"/>            <!-- 81 -->
+    <connect name="Sch_B_4_Bed_4" active="false" site1="Sch_b_p4" site2="Bed_p4"/>              <!-- 82 -->
+    <connect name="Tast_4_Bed_4" active="false" site1="Tast_p4" site2="Bed_p4"/>                <!-- 83 -->
+
+    <connect name="Sch_B_2_Sch_A_1" active="false" site1="Sch_b_p2" site2="Sch_a_p1"/>          <!-- 84 -->
+    <connect name="Tast_2_Sch_A_1" active="false" site1="Tast_p2" site2="Sch_a_p1"/>            <!-- 85 -->
+    <connect name="Bed_2_Sch_A_1" active="false" site1="Bed_p2" site2="Sch_a_p1"/>              <!-- 86 -->
+
+    <connect name="Sch_B_3_Sch_A_2" active="false" site1="Sch_b_p3" site2="Sch_a_p2"/>          <!-- 87 -->
+    <connect name="Tast_3_Sch_A_2" active="false" site1="Tast_p3" site2="Sch_a_p2"/>            <!-- 88 -->
+    <connect name="Bed_3_Sch_A_2" active="false" site1="Bed_p3" site2="Sch_a_p2"/>              <!-- 89 -->
+
+    <connect name="Sch_B_4_Sch_A_3" active="false" site1="Sch_b_p4" site2="Sch_a_p3"/>          <!-- 90 -->
+    <connect name="Tast_4_Sch_A_3" active="false" site1="Tast_p4" site2="Sch_a_p3"/>            <!-- 91 -->
+    <connect name="Bed_4_Sch_A_3" active="false" site1="Bed_p4" site2="Sch_a_p3"/>              <!-- 92 -->
+
+    <connect name="Sch_B_2_LS_1" active="false" site1="Sch_b_p2" site2="LS_p1"/>          <!-- 93 -->
+    <connect name="Tast_2_LS_1" active="false" site1="Tast_p2" site2="LS_p1"/>            <!-- 94 -->
+    <connect name="Bed_2_LS_1" active="false" site1="Bed_p2" site2="LS_p1"/>              <!-- 95 -->
+
+    <connect name="Sch_B_3_LS_2" active="false" site1="Sch_b_p3" site2="LS_p2"/>          <!-- 96 -->
+    <connect name="Tast_3_LS_2" active="false" site1="Tast_p3" site2="LS_p2"/>            <!-- 97 -->
+    <connect name="Bed_3_LS_2" active="false" site1="Bed_p3" site2="LS_p2"/>              <!-- 98 -->
+
+    <connect name="Sch_B_4_LS_3" active="false" site1="Sch_b_p4" site2="LS_p3"/>          <!-- 99 -->
+    <connect name="Tast_4_LS_3" active="false" site1="Tast_p4" site2="LS_p3"/>            <!-- 100 -->
+    <connect name="Bed_4_LS_3" active="false" site1="Bed_p4" site2="LS_p3"/>              <!-- 101 -->
+
+    <connect name="ANT_1_L_B_1" active="false" site1="ANT_p1" site2="LADE_B_p1" solimp="0.9 0.90 0.0005" solref="0.002 1"/>         <!-- 102 -->
+    <connect name="ANT_1_L_A_1" active="false" site1="ANT_p1" site2="LADE_A_p1" solimp="0.9 0.90 0.0005" solref="0.002 1"/>         <!-- 103 -->
+    <connect name="L_A_1_L_B_1" active="false" site1="LADE_A_p1" site2="LADE_B_p1" solimp="0.9 0.90 0.0005" solref="0.002 1"/>      <!-- 104 -->
+
+    <connect name="ANT_2_L_B_2" active="false" site1="ANT_p2" site2="LADE_B_p2"/>         <!-- 105 -->
+    <connect name="ANT_2_L_A_2" active="false" site1="ANT_p2" site2="LADE_A_p2"/>         <!-- 106 -->
+    <connect name="L_A_2_L_B_2" active="false" site1="LADE_A_p2" site2="LADE_B_p2"/>      <!-- 107 -->
+
+    <connect name="ANT_3_L_B_3" active="false" site1="ANT_p3" site2="LADE_B_p3"/>         <!-- 108 -->
+    <connect name="ANT_3_L_A_3" active="false" site1="ANT_p3" site2="LADE_A_p3"/>         <!-- 109 -->
+    <connect name="L_A_3_L_B_3" active="false" site1="LADE_A_p3" site2="LADE_B_p3"/>      <!-- 110 -->
+
+    <connect name="Sch_B_3_ANT_2" active="false" site1="Sch_b_p3" site2="ANT_p2"/>          <!-- 111 -->
+    <connect name="Tast_3_ANT_2" active="false" site1="Tast_p3" site2="ANT_p2"/>            <!-- 112 -->
+    <connect name="Bed_3_ANT_2" active="false" site1="Bed_p3" site2="ANT_p2"/>              <!-- 113 -->
+
+    <connect name="Sch_B_4_ANT_3" active="false" site1="Sch_b_p4" site2="ANT_p3"/>          <!-- 114 -->
+    <connect name="Tast_4_ANT_3" active="false" site1="Tast_p4" site2="ANT_p3"/>            <!-- 115 -->
+    <connect name="Bed_4_ANT_3" active="false" site1="Bed_p4" site2="ANT_p3"/>              <!-- 116 -->
+
+    <connect name="Sch_B_3_L_B_2" active="false" site1="Sch_b_p3" site2="LADE_B_p2"/>          <!-- 117 -->
+    <connect name="Tast_3_L_B_2" active="false" site1="Tast_p3" site2="LADE_B_p2"/>            <!-- 118 -->
+    <connect name="Bed_3_L_B_2" active="false" site1="Bed_p3" site2="LADE_B_p2"/>              <!-- 119 -->
+
+    <connect name="Sch_B_4_L_B_3" active="false" site1="Sch_b_p4" site2="LADE_B_p3"/>          <!-- 120 -->
+    <connect name="Tast_4_L_B_3" active="false" site1="Tast_p4" site2="LADE_B_p3"/>            <!-- 121 -->
+    <connect name="Bed_4_L_B_3" active="false" site1="Bed_p4" site2="LADE_B_p3"/>              <!-- 122 -->
+
+    <connect name="Sch_B_3_L_A_2" active="false" site1="Sch_b_p3" site2="LADE_A_p2"/>          <!-- 123 -->
+    <connect name="Tast_3_L_A_2" active="false" site1="Tast_p3" site2="LADE_A_p2"/>            <!-- 124 -->
+    <connect name="Bed_3_L_A_2" active="false" site1="Bed_p3" site2="LADE_A_p2"/>              <!-- 125 -->
+
+    <connect name="Sch_B_4_L_A_3" active="false" site1="Sch_b_p4" site2="LADE_A_p3"/>          <!-- 126 -->
+    <connect name="Tast_4_L_A_3" active="false" site1="Tast_p4" site2="LADE_A_p3"/>            <!-- 127 -->
+    <connect name="Bed_4_L_A_3" active="false" site1="Bed_p4" site2="LADE_A_p3"/>              <!-- 128 -->
+
+    <connect name="Sch_B_3_SPC_1" active="false" site1="Sch_b_p3" site2="SPC_1_p1"/>           <!-- 129 -->
+    <connect name="Sch_A_2_SPC_1" active="false" site1="Sch_a_p2" site2="SPC_1_p1"/>           <!-- 130 -->
+    <connect name="Tast_3_SPC_1" active="false" site1="Tast_p3" site2="SPC_1_p1"/>             <!-- 131 -->
+    <connect name="Bed_3_SPC_1" active="false" site1="Bed_p3" site2="SPC_1_p1"/>               <!-- 132 -->
+    <connect name="LS_2_SPC_1" active="false" site1="LS_p2" site2="SPC_1_p1"/>                 <!-- 133 -->
+    <connect name="ANT_2_SPC_1" active="false" site1="ANT_p2" site2="SPC_1_p1"/>               <!-- 134 -->
+    <connect name="L_B_2_SPC_1" active="false" site1="LADE_B_p2" site2="SPC_1_p1"/>            <!-- 135 -->
+    <connect name="L_A_2_SPC_1" active="false" site1="LADE_A_p2" site2="SPC_1_p1"/>            <!-- 136 -->
+
+    <connect name="Sch_B_4_SPC_1" active="false" site1="Sch_b_p4" site2="SPC_1_p2"/>           <!-- 137 -->
+    <connect name="Sch_A_3_SPC_1" active="false" site1="Sch_a_p3" site2="SPC_1_p2"/>           <!-- 138 -->
+    <connect name="Tast_4_SPC_1" active="false" site1="Tast_p4" site2="SPC_1_p2"/>             <!-- 139 -->
+    <connect name="Bed_4_SPC_1" active="false" site1="Bed_p4" site2="SPC_1_p2"/>               <!-- 140 -->
+    <connect name="LS_3_SPC_1" active="false" site1="LS_p3" site2="SPC_1_p2"/>                 <!-- 141 -->
+    <connect name="ANT_3_SPC_1" active="false" site1="ANT_p3" site2="SPC_1_p2"/>               <!-- 142 -->
+    <connect name="L_B_3_SPC_1" active="false" site1="LADE_B_p3" site2="SPC_1_p2"/>            <!-- 143 -->
+    <connect name="L_A_3_SPC_1" active="false" site1="LADE_A_p3" site2="SPC_1_p2"/>            <!-- 144 -->
+
+    <connect name="Sch_B_4_SPC_2" active="false" site1="Sch_b_p4" site2="SPC_2_p1"/>           <!-- 145 -->
+    <connect name="Sch_A_3_SPC_2" active="false" site1="Sch_a_p3" site2="SPC_2_p1"/>           <!-- 146 -->
+    <connect name="Tast_4_SPC_2" active="false" site1="Tast_p4" site2="SPC_2_p1"/>             <!-- 147 -->
+    <connect name="Bed_4_SPC_2" active="false" site1="Bed_p4" site2="SPC_2_p1"/>               <!-- 148 -->
+    <connect name="LS_3_SPC_2" active="false" site1="LS_p3" site2="SPC_2_p1"/>                 <!-- 149 -->
+    <connect name="ANT_3_SPC_2" active="false" site1="ANT_p3" site2="SPC_2_p1"/>               <!-- 150 -->
+    <connect name="L_B_3_SPC_2" active="false" site1="LADE_B_p3" site2="SPC_2_p1"/>            <!-- 151 -->
+    <connect name="L_A_3_SPC_2" active="false" site1="LADE_A_p3" site2="SPC_2_p1"/>            <!-- 152 -->
+    <connect name="SPC_1_SPC_2" active="false" site1="SPC_1_p2" site2="SPC_2_p1"/>             <!-- 153 -->
+
+    <connect name="G1_MBC2_C1" active="false" site1="MBC1_S3" site2="g1_pad1_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 154 -->
+    <connect name="G1_MBC2_C2" active="false" site1="MBC1_S2" site2="g1_pad2_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 155 -->
+
+    <connect name="G2_MBC1_C1" active="false" site1="MBC2_S3" site2="g2_pad1_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 156 -->
+    <connect name="G2_MBC1_C2" active="false" site1="MBC2_S2" site2="g2_pad2_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 157 -->
+
+    <connect name="G3_MBC3_C1" active="false" site1="MBC3_S3" site2="g3_pad2_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 158 anchor="-6.8215 0.159 -1.405" -->
+    <connect name="G3_MBC3_C2" active="false" site1="MBC3_S2" site2="g3_pad1_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 159 anchor="-6.8215 0.189 -1.405" -->
+
+    <connect name="G4_MBC5_C1" active="false" site1="MBC5_S3" site2="g4_pad2_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 160 -->
+    <connect name="G4_MBC5_C2" active="false" site1="MBC5_S2" site2="g4_pad1_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 161 -->
+
+    <connect name="G5_MBC8_C1" active="false" site1="MBC8_S3" site2="g5_pad2_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 162 -->
+    <connect name="G5_MBC8_C2" active="false" site1="MBC8_S2" site2="g5_pad1_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>   <!-- 163 -->
+
+    <connect name="MB2_MBC2" active="true" site1="MB2_S12" site2="MBC2_S12" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 164 -->
+    <connect name="MB2_MBC3" active="true" site1="MB2_S21" site2="MBC2_S21" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 165 -->
+    <connect name="MB2_MBC4" active="true" site1="MB2_S22" site2="MBC2_S22" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 166 -->
+
+    <connect name="MB9_MBC2" active="true" site1="MB9_S12" site2="MBC9_S12" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 167 -->
+    <connect name="MB9_MBC3" active="true" site1="MB9_S21" site2="MBC9_S21" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 168 -->
+    <connect name="MB9_MBC4" active="true" site1="MB9_S22" site2="MBC9_S22" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 16９ -->
+
+    <connect name="MB10_MBC2" active="true" site1="MB10_S12" site2="MBC10_S12" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 170 -->
+    <connect name="MB10_MBC3" active="true" site1="MB10_S21" site2="MBC10_S21" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 171 -->
+    <connect name="MB10_MBC4" active="true" site1="MB10_S22" site2="MBC10_S22" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 172 -->
+
+    <connect name="MB11_MBC2" active="true" site1="MB11_S12" site2="MBC11_S12" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 173 -->
+    <connect name="MB11_MBC3" active="true" site1="MB11_S21" site2="MBC11_S21" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 174 -->
+    <connect name="MB11_MBC4" active="true" site1="MB11_S22" site2="MBC11_S22" solimp="0.99 0.999 0.0001" solref="0.002 1"/>        <!-- 175 -->
+
+    <connect name="G8_MBC9_C1" active="false" site1="MBC9_S3" site2="g8_pad1_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>      <!-- 176 -->
+    <connect name="G8_MBC9_C2" active="false" site1="MBC9_S2" site2="g8_pad2_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>      <!-- 177 -->
+
+    <connect name="G6_MBC10_C1" active="false" site1="MBC10_S3" site2="g6_pad2_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>    <!-- 178 -->
+    <connect name="G6_MBC10_C2" active="false" site1="MBC10_S2" site2="g6_pad1_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>    <!-- 179 -->
+
+    <connect name="G7_MBC11_C1" active="false" site2="MBC11_S3" site1="g7_pad1_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>    <!-- 180 -->
+    <connect name="G7_MBC11_C2" active="false" site2="MBC11_S2" site1="g7_pad2_s1" solimp="0.99 0.999 0.0001" solref="0.002 1"/>    <!-- 181 -->
+
+    <weld name="conn_Sch_A" body1="Sch_A_Re" body2="Wire_Schaltbet_AB_last" active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 182 --> <!-- 33 -->
+    <weld name="conn_Sch_B" body1="Sch_B_Re" body2="Wire_Schaltbet_BB_last" active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 183 --> <!-- 39 -->
+    <weld name="conn_TAST" body1="Tast_Re" body2="Wire_TASTSTARTB_last"     active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 184 --> <!-- 38 -->
+    <weld name="conn_BEDK" body1="Bed_Re" body2="Wire_BEDKOMB_last"         active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 185 --> <!-- 38 -->
+    <weld name="conn_LSRE" body1="LS_Re" body2="Wire_LSREGLERB_last"        active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 186 --> <!-- 33 -->
+    <weld name="conn_ANTK" body1="ANT_Re" body2="Wire_ANTKESSY1B_last"      active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 187 --> <!-- 31 -->
+    <weld name="conn_LADA" body1="LADE_A_Re" body2="Wire_LADE1_AB_last"     active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 188 --> <!-- 32 -->
+    <weld name="conn_LADB" body1="LADE_B_Re" body2="Wire_LADE1_BB_last"     active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 189 --> <!-- 32 -->
+    <weld name="conn_SPC1" body1="SPC_1_Re" body2="Wire_SPC_1B_last"        active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 190 --> <!-- 28 -->
+    <weld name="conn_SPC2" body1="SPC_2_Re" body2="Wire_SPC_2B_last"        active="true" anchor="0 0 0" solimp="0.99 0.999 0.0001" solref="0.002 1" />      <!-- 191 --> <!-- 18 -->
+    
+    <connect name="rel_Sch_A" site1="markerp1_relief" site2="Sch_a_re"  active="false" solimp="0.99 0.990 0.00001" solref="0.0002 1"/>     <!-- 192 -->
+    <connect name="rel_Sch_B" site1="markerp2_relief" site2="Sch_b_re"  active="false" solimp="0.99 0.990 0.00001" solref="0.0002 1" />    <!-- 193 -->
+    <connect name="rel_TAST" site1="markerp3_relief" site2="Tast_re"    active="false" solimp="0.99 0.990 0.00001" solref="0.0002 1" />    <!-- 194 -->
+    <connect name="rel_BEDK" site1="markerp5_relief" site2="Bed_re"     active="false" solimp="0.99 0.990 0.00001" solref="0.0002 1" />    <!-- 195 -->
+    <connect name="rel_LSRE" site1="markerp8_relief" site2="LS_re"      active="false" solimp="0.99 0.990 0.00001" solref="0.0002 1" />    <!-- 196 -->
+    <connect name="rel_ANTK" site1="markerp9_relief" site2="ANT_re"     active="false" solimp="0.999 0.9990 0.00001" solref="0.0002 1" />    <!-- 197 -->
+    <connect name="rel_LADA" site1="markerp10_relief" site2="LADE_A_re" active="false" solimp="0.999 0.9990 0.00001" solref="0.0002 1" />    <!-- 198 -->
+    <connect name="rel_LADB" site1="markerp11_relief" site2="LADE_B_re" active="false" solimp="0.999 0.9990 0.00001" solref="0.0002 1" />    <!-- 199 -->
+    <connect name="rel_SPC1" site1="markerp6_relief" site2="SPC_1_re"   active="false" solimp="0.99 0.990 0.00001" solref="0.0002 1" />    <!-- 200 -->
+    <connect name="rel_SPC2" site1="markerp7_relief" site2="SPC_2_re"   active="false" solimp="0.99 0.990 0.00001" solref="0.0002 1" />    <!-- 201 -->
+  </equality>
+
+  <sensor>
+    <!-- mod1 — SCHALTBET_A connector housing -->
+    <force        name="force_p1cav1"         site="markerp1c1"/>
+    <velocimeter  name="velocity_p1cav1"      site="markerp1c1"/>
+    <accelerometer name="acceleration_p1cav1" site="markerp1c1"/>
+
+    <!-- mod2 — SCHALTBET_B connector housing -->
+    <force        name="force_p2cav1"         site="markerp2c1"/>
+    <velocimeter  name="velocity_p2cav1"      site="markerp2c1"/>
+    <accelerometer name="acceleration_p2cav1" site="markerp2c1"/>
+
+    <!-- mod3 — TASTSTART connector housing -->
+    <force        name="force_p3cav1"         site="markerp3c1"/>
+    <velocimeter  name="velocity_p3cav1"      site="markerp3c1"/>
+    <accelerometer name="acceleration_p3cav1" site="markerp3c1"/>
+
+    <!-- mod4 — Central connector block (trunk origin cavities) -->
+    <force        name="force_p4cav1"         site="markerp4c1"/>
+    <velocimeter  name="velocity_p4cav1"      site="markerp4c1"/>
+    <accelerometer name="acceleration_p4cav1" site="markerp4c1"/>
+
+    <force        name="force_p4cav2"         site="markerp4c2"/>
+    <velocimeter  name="velocity_p4cav2"      site="markerp4c2"/>
+    <accelerometer name="acceleration_p4cav2" site="markerp4c2"/>
+
+    <force        name="force_p4cav3"         site="markerp4c3"/>
+    <velocimeter  name="velocity_p4cav3"      site="markerp4c3"/>
+    <accelerometer name="acceleration_p4cav3" site="markerp4c3"/>
+
+    <!-- mod5 — BEDKOMB connector housing -->
+    <force        name="force_p5cav1"         site="markerp5c1"/>
+    <velocimeter  name="velocity_p5cav1"      site="markerp5c1"/>
+    <accelerometer name="acceleration_p5cav1" site="markerp5c1"/>
+
+    <!-- mod6 — SPC_1 connector housing -->
+    <force        name="force_p6cav1"         site="markerp6c1"/>
+    <velocimeter  name="velocity_p6cav1"      site="markerp6c1"/>
+    <accelerometer name="acceleration_p6cav1" site="markerp6c1"/>
+
+    <!-- mod7 — SPC_2 connector housing -->
+    <force        name="force_p7cav1"         site="markerp7c1"/>
+    <velocimeter  name="velocity_p7cav1"      site="markerp7c1"/>
+    <accelerometer name="acceleration_p7cav1" site="markerp7c1"/>
+
+    <!-- mod8 — LSREGLER connector housing -->
+    <force        name="force_p8cav1"         site="markerp8c1"/>
+    <velocimeter  name="velocity_p8cav1"      site="markerp8c1"/>
+    <accelerometer name="acceleration_p8cav1" site="markerp8c1"/>
+
+    <!-- mod9 — ANTKESSY1 connector housing -->
+    <force        name="force_p9cav1"         site="markerp9c1"/>
+    <velocimeter  name="velocity_p9cav1"      site="markerp9c1"/>
+    <accelerometer name="acceleration_p9cav1" site="markerp9c1"/>
+
+    <!-- mod10 — LADE1_A connector housing -->
+    <force        name="force_p10cav1"         site="markerp10c1"/>
+    <velocimeter  name="velocity_p10cav1"      site="markerp10c1"/>
+    <accelerometer name="acceleration_p10cav1" site="markerp10c1"/>
+
+    <!-- mod11 — LADE1_B connector housing -->
+    <force        name="force_p11cav1"         site="markerp11c1"/>
+    <velocimeter  name="velocity_p11cav1"      site="markerp11c1"/>
+    <accelerometer name="acceleration_p11cav1" site="markerp11c1"/>
+  </sensor>
+
+  <actuator>
+    
+    <plugin name="GA_X" joint="G_x_slide" plugin="mujoco.pid" instance="pid_gx" ctrlrange="-50 50" actdim="2"/>
+    <plugin name="GA_Y" joint="G_y_slide" plugin="mujoco.pid" instance="pid_gy" ctrlrange="-50 50" actdim="2"/>
+    <plugin name="GA_Z" joint="G_z_slide" plugin="mujoco.pid" instance="pid_gz" ctrlrange="-50 50" actdim="2"/>
+
+    <!-- <motor name="GA_X" joint="G_x_slide" ctrlrange="-100 100" gear="16"/>
+    <motor name="GA_Y" joint="G_y_slide" ctrlrange="-100 100" gear="16"/>
+    <motor name="GA_Z" joint="G_z_slide" ctrlrange="-100 100" gear="16"/> -->
+    <!-- <position name="GA_z_Rotation" joint="G_z_rotation" kp="100"/> -->
+
+    <!-- <position name="GA_X" joint="G_x_slide" ctrlrange="-20 20" gear=".75" kp="1500"/>
+	  <position name="GA_Y" joint="G_y_slide" ctrlrange="-20 20" gear=".75" kp="1500"/>
+	  <position name="GA_Z" joint="G_z_slide" ctrlrange="-20 20" gear="1" kp="1500"/> -->
+
+    <motor name="MODULE_BOX_1_X" joint="slide_joint1x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_1_Y" joint="slide_joint1y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_1_Z" joint="slide_joint1z" ctrlrange="-10 10" gear=".5"/>
+
+	  <motor name="MODULE_BOX_2_X" joint="slide_joint2x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_2_Y" joint="slide_joint2y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_2_Z" joint="slide_joint2z" ctrlrange="-10 10" gear=".5"/>
+	  <motor name="MODULE_BOX_2_H" joint="hinge_joint_MB2" ctrllimited="true" ctrlrange="-90 90" gear="25"/>
+	  <!-- <motor name="MODULE_BOX_2_HC" joint="hinge_joint_MBC2" ctrllimited="true" ctrlrange="-90 90" gear="25"/> -->
+
+	  <motor name="MODULE_BOX_3_X" joint="slide_joint3x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_3_Y" joint="slide_joint3y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_3_Z" joint="slide_joint3z" ctrlrange="-10 10" gear=".5"/>
+
+    <motor name="MODULE_BOX_4_X" joint="slide_joint4x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_4_Y" joint="slide_joint4y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_4_Z" joint="slide_joint4z" ctrlrange="-10 10" gear=".5"/>
+
+    <motor name="MODULE_BOX_5_X" joint="slide_joint5x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_5_Y" joint="slide_joint5y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_5_Z" joint="slide_joint5z" ctrlrange="-10 10" gear=".5"/>
+
+	  <motor name="MODULE_BOX_6_X" joint="slide_joint6x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_6_Y" joint="slide_joint6y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_6_Z" joint="slide_joint6z" ctrlrange="-10 10" gear=".5"/>
+
+	  <motor name="MODULE_BOX_7_X" joint="slide_joint7x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_7_Y" joint="slide_joint7y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_7_Z" joint="slide_joint7z" ctrlrange="-10 10" gear=".5"/>
+
+    <motor name="MODULE_BOX_8_X" joint="slide_joint8x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_8_Y" joint="slide_joint8y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_8_Z" joint="slide_joint8z" ctrlrange="-10 10" gear=".5"/>
+    
+    <motor name="MODULE_BOX_9_X" joint="slide_joint9x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_9_Y" joint="slide_joint9y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_9_Z" joint="slide_joint9z" ctrlrange="-10 10" gear=".5"/>
+	  <motor name="MODULE_BOX_9_H" joint="hinge_joint_MB9" ctrllimited="true" ctrlrange="-90 90" gear="25"/>
+
+    <motor name="MODULE_BOX_10_X" joint="slide_joint10x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_10_Y" joint="slide_joint10y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_10_Z" joint="slide_joint10z" ctrlrange="-10 10" gear=".5"/>
+	  <motor name="MODULE_BOX_10_H" joint="hinge_joint_MB10" ctrllimited="true" ctrlrange="-90 90" gear="25"/>
+
+    <motor name="MODULE_BOX_11_X" joint="slide_joint11x" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_11_Y" joint="slide_joint11y" ctrlrange="-20 20" gear=".5"/>
+	  <motor name="MODULE_BOX_11_Z" joint="slide_joint11z" ctrlrange="-10 10" gear=".5"/>
+	  <motor name="MODULE_BOX_11_H" joint="hinge_joint_MB11" ctrllimited="true" ctrlrange="-90 90" gear="25"/>
+
+    <motor name="Sch_A_F_1_Actuator" joint="Sch_A_F1_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 3.3"/>
+    <motor name="Sch_A_F_2_Actuator" joint="Sch_A_F2_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 3.3"/>
+
+    <motor name="Sch_B_F_1_Actuator" joint="Sch_B_F1_slide" gear= "25" ctrllimited="true" ctrlrange="-1.9 3.3"/>
+    <motor name="Sch_B_F_2_Actuator" joint="Sch_B_F2_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 1.9"/>
+
+    <motor name="TAST_F_1_Actuator" joint="TAST_F1_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 3.3"/>
+    <motor name="TAST_F_2_Actuator" joint="TAST_F2_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 3.3"/>
+
+    <motor name="BED_F_1_Actuator" joint="BED_F1_slide" gear= "25" ctrllimited="true" ctrlrange="-3 3.3"/>
+    <motor name="BED_F_2_Actuator" joint="BED_F2_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 3"/>
+
+    <motor name="LSREG_F_1_Actuator" joint="LSREG_F1_slide" gear= "25" ctrllimited="true" ctrlrange="-1.9 3"/>
+    <motor name="LSREG_F_2_Actuator" joint="LSREG_F2_slide" gear= "25" ctrllimited="true" ctrlrange="-3 1.9"/>
+
+    <motor name="LADE1_A_F_1_Actuator" joint="LADE1_A_F1_slide" gear= "25" ctrllimited="true" ctrlrange="-3 3.3"/>
+    <motor name="LADE1_A_F_2_Actuator" joint="LADE1_A_F2_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 3"/>
+
+    <motor name="LADE1_B_F_1_Actuator" joint="LADE1_B_F1_slide" gear= "25" ctrllimited="true" ctrlrange="-4.25 3.3"/>
+    <motor name="LADE1_B_F_2_Actuator" joint="LADE1_B_F2_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 4.25"/>
+
+    <motor name="ANT_F_1_Actuator" joint="ANT_F1_slide" gear= "25" ctrllimited="true" ctrlrange="-3 3.3"/>
+    <motor name="ANT_F_2_Actuator" joint="ANT_F2_slide" gear= "25" ctrllimited="true" ctrlrange="-3.3 3"/>
+  </actuator>
+
+</mujoco>
