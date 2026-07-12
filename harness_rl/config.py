@@ -76,7 +76,11 @@ def make_env(render_mode=None):
         # tracking, so the agent's actions actually move the gripper.
         substeps=50, max_step_m=0.04,
         grasp_tol=0.15,          # LOOSER than 0.03 so the agent can actually get first successes
-        approach_radius=0.30,    # RL only has to reach within 0.30 m; scripted control finishes
+        # approach_radius: within this distance a scripted controller finishes the approach.
+        # START GENEROUS (0.8). If it is too tight (e.g. 0.3) the agent never reaches the handoff
+        # zone, never earns the success bonus, and has NO learning signal -> flat 0% success.
+        # train_common.py shrinks this automatically as the success rate rises (curriculum).
+        approach_radius=0.80,
         # ---- reward weights ----
         stress_source="passive", sigma_ref=1.0,
         # w_progress must be large enough that moving toward the goal OUT-EARNS the time
