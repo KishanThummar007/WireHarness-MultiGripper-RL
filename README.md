@@ -138,10 +138,11 @@ WireHarness-MultiGripper-RL/
 ├── 📂 harness_rl/                  ← THE ENVIRONMENT (the "problem")
 │   ├── 📄 __init__.py                registers the "HarnessPick-v0" env ID
 │   ├── 📄 env.py                     HarnessPickEnv: observation, REWARD, reset, step, grasp
-│   └── 📄 config.py                  all settings: target, workspace, reward weights, grasp phases
+│   └── 📄 config.py                  settings: paths, target, workspace, reward weights,
+│                                     grasp phases, approach_radius (curriculum start)
 │
 ├── 📂 examples/                    ← THE AGENTS (the "solution")
-│   ├── 📄 train_common.py            shared: episode logging, log file, learning-curve graphs
+│   ├── 📄 train_common.py            shared: episode logging, curriculum, checkpoint/RESUME, graphs
 │   ├── 📄 train_sac.py               train with SAC   → harness_sac.zip
 │   ├── 📄 train_td3.py               train with TD3   → harness_td3.zip
 │   └── 📄 watch.py                   load a .zip policy and SEE it in the MuJoCo viewer
@@ -154,23 +155,42 @@ WireHarness-MultiGripper-RL/
 ├── 📄 pyproject.toml
 ├── 📄 LICENSE
 └── 📄 README.md
+
+Generated during training (git-ignored):
+   harness_sac.zip                policy weights
+   harness_sac_buffer.pkl         replay buffer — past experience (RESUME needs this)
+   harness_sac_state.json         episode count, curriculum radius, histories
+   training_harness_sac.log       per-episode PASS/FAIL + per-step detail
+   learning_curve_harness_sac.png reward / success rate / distance-vs-radius
 ```
 
 ### How the pieces fit together
 
 ```
-        config.py  ──────────────► settings
-                                       │
-                                       ▼
-   ┌───────────────┐   action    ┌───────────────┐
-   │   RL AGENT    │ ──────────► │  ENVIRONMENT  │
-   │ SAC / TD3     │             │   env.py      │
-   │ (examples/)   │ ◄────────── │  (harness_rl) │
-   └───────────────┘  obs+reward └───────────────┘
-          │                              ▲
-          │ saves                        │ loads
-          ▼                              │
-   harness_sac.zip ───────────────► watch.py  (MuJoCo viewer)
+config.py  ─────────────► settings + reward weights
+                                                     │
+                                                     ▼
+       ┌──────────────────┐   action (Δx,Δy,Δz)  ┌──────────────────┐
+       │    RL AGENT      │ ──────────────────►  │   ENVIRONMENT    │
+       │   SAC  /  TD3    │                      │     env.py       │
+       │   (examples/)    │ ◄──────────────────  │   (harness_rl)   │
+       └──────────────────┘   obs + reward       └──────────────────┘
+          │            ▲                                  ▲
+          │ saves      │ resumes                          │ loads
+          ▼            │                                  │
+   ┌─────────────────────────────────┐                    │
+   │  CHECKPOINT  (every N episodes) │                    │
+   │   harness_sac.zip      policy   │                    │
+   │   ..._buffer.pkl       memory   │ ← the replay buffer│is what
+   │   ..._state.json       progress │   preserves learning across runs
+   └─────────────────────────────────┘                    │
+          │                                               │
+          │ policy .zip                                   │
+          └──────────────────────────────────────► watch.py  (MuJoCo viewer)
+
+   CURRICULUM: approach_radius starts at 0.80 (a scripted controller finishes the
+   approach inside it). Once ≥70% of the last 10 episodes PASS, it shrinks by 0.10
+   (floor 0.15) — pushing the policy from "get roughly close" → "reach precisely".
 ```
 
 **Train headless → watch locally.** `train_*.py` opens **no** graphics window (fast, and works over
