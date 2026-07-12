@@ -23,22 +23,6 @@
 
   <asset>
     <mesh name="Large_Gripper" file="001_P33553-Part 3.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P1_B" file="P1.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P2_B" file="P2.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P3_B" file="P3.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P4_B" file="P4.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P5_B" file="P5.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P6_B" file="P6.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P7_B" file="P7.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P8_B" file="P8.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P9_B" file="P9.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P10_B" file="P10.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P11_B" file="P11.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P12_B" file="P12.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P13_B" file="P13.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P14_B" file="P14.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P15_B" file="P15.stl" scale="0.002 0.002 0.002"/>
-    <mesh name="P16_B" file="P16.stl" scale="0.002 0.002 0.002"/>
 
     <!-- <mesh name="origin_baseplate" file="P33553.stl" scale="0.002 0.002 0.002"/> -->
 
