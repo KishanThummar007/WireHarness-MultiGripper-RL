@@ -7,12 +7,32 @@ environment is configured identically everywhere. Edit values here only.
 =============================================================================
 """
 
+import os
 import numpy as np
 from .env import HarnessPickEnv
 
-# --- paths ---
-XML = r"E:\MultiGripper_RL\Multi Gripper 4.xml"
-SNAPSHOT = "S0_harness.npy"
+# --- paths (PORTABLE: resolved relative to this package, so the repo works
+#     on any machine and any OS after `git clone` + `pip install -e .`) ---
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_ASSETS = os.path.join(os.path.dirname(_HERE), "assets")
+
+XML = os.environ.get("HARNESS_XML", os.path.join(_ASSETS, "Multi Gripper 4.xml"))
+SNAPSHOT = os.environ.get("HARNESS_SNAPSHOT", os.path.join(_ASSETS, "S0_harness.npy"))
+
+
+def _check_assets():
+    """Checked when the env is BUILT (not at import), so `import harness_rl`
+    always succeeds and gym.make() gives a clear message if assets are missing."""
+    if not os.path.isfile(XML):
+        raise FileNotFoundError(
+            f"MuJoCo model not found: {XML}\n"
+            f"Place 'Multi Gripper 4.xml' and its .stl meshes in assets/, "
+            f"or set the HARNESS_XML environment variable.")
+    if not os.path.isfile(SNAPSHOT):
+        raise FileNotFoundError(
+            f"Harness snapshot not found: {SNAPSHOT}\n"
+            f"Generate it with harness_rl.save_snapshot() at the harness-formed "
+            f"moment, or set the HARNESS_SNAPSHOT environment variable.")
 
 # --- wire / gripper identification (from your Sim_Main_3 / TrajOpt_3) ---
 WIRE_PREFIXES = (
@@ -43,6 +63,7 @@ GRASP_PHASES = (
 
 def make_env(render_mode=None):
     """Build the fully-configured environment for the real harness model."""
+    _check_assets()
     return HarnessPickEnv(
         XML,
         target_xyz=TARGET_XYZ,
@@ -50,11 +71,20 @@ def make_env(render_mode=None):
         wire_geom_prefix="Wire_",
         gripper_body_names=GRIPPER_BODY_NAMES,
         workspace_lo=(6.5, -0.5, 2.9), workspace_hi=(8.0, 1.8, 3.7),
-        substeps=10, max_step_m=0.03, grasp_tol=0.03,
+        # substeps: physics steps per env step. With only 10, the PID reaches just ~18% of the
+        # commanded delta before the next action arrives -> the gripper crawls. 50 gives ~75%
+        # tracking, so the agent's actions actually move the gripper.
+        substeps=50, max_step_m=0.04,
+        grasp_tol=0.15,          # LOOSER than 0.03 so the agent can actually get first successes
+        approach_radius=0.30,    # RL only has to reach within 0.30 m; scripted control finishes
         # ---- reward weights ----
         stress_source="passive", sigma_ref=1.0,
         w_progress=10.0, w_stress=5.0, w_coll=0.05,
-        w_smooth=0.0, w_path=0.0, w_ctrl=0.0,   # <-- raise these to add smoothness / path-length / effort penalties
+        # NOTE: w_smooth/w_path/w_ctrl are PENALTIES. If they are large and w_time=0, the agent
+        # farms reward by STANDING STILL (all penalties ~0). Keep them small, and always keep
+        # w_time > 0 so doing nothing is strictly punished.
+        w_smooth=0.05, w_path=0.0, w_ctrl=0.0,
+        w_time=1.0,              # constant per-step cost -> idling loses, finishing fast wins
         success_bonus=50.0,
         grasp_phases=GRASP_PHASES,
         saved_state=np.load(SNAPSHOT),
