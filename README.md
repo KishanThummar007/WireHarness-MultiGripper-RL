@@ -53,7 +53,14 @@ env.close()
 
 | ID | Target | Description |
 | --- | --- | --- |
-| `HarnessPick-v0` | Fixed (TASTSTART) | Reach and grasp a single connector housing |
+| `HarnessPick-v0` | Fixed (CON_T) | Reach `G_1` and grasp CON_T connector housing |
+| `HarnessPick-v0` | Optional (CON_BK) | Reach `G_2` and grasp CON_BK connector housing |
+| `HarnessPick-v0` | Optional (CON_B) | Reach `G_3` and grasp CON_B connector housing |
+| `HarnessPick-v0` | Optional (CON_A) | Reach `G_4` and grasp CON_A connector housing |
+| `HarnessPick-v0` | Optional (CON_LS) | Reach `G_5` and grasp CON_LS connector housing |
+| `HarnessPick-v0` | Optional (CON_LA) | Reach `G_6` and grasp CON_LA connector housing |
+| `HarnessPick-v0` | Optional (CON_LB) | Reach `G_7` and grasp CON_LB connector housing |
+| `HarnessPick-v0` | Optional (CON_ANT) | Reach `G_8` and grasp CON_ANT connector housing |
 
 ### Observation Space
 
@@ -167,7 +174,7 @@ Generated during training (git-ignored):
 ### How the pieces fit together
 
 ```
-config.py  ─────────────► settings + reward weights
+        config.py  ────────────────► settings + reward weights
                                                      │
                                                      ▼
        ┌──────────────────┐   action (Δx,Δy,Δz)  ┌──────────────────┐
@@ -193,7 +200,8 @@ config.py  ─────────────► settings + reward weights
    (floor 0.15) — pushing the policy from "get roughly close" → "reach precisely".
 ```
 
-**Train headless → watch locally.** `train_*.py` opens **no** graphics window (fast, and works over
+**Train headless → watch locally.
+** `train_*.py` opens **no** graphics window (fast, and works over
 SSH on a remote server or cluster). It saves the policy as a `.zip`. To *see* the trained gripper,
 run `watch.py`, which loads that `.zip` and renders it in the MuJoCo viewer.
 
