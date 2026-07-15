@@ -46,8 +46,17 @@ GRIPPER_BODY_NAMES = {
     "LADE1_A_F1", "LADE1_A_F2", "LADE1_B_F1", "LADE1_B_F2", "ANT_F1", "ANT_F2",
 }
 
-# --- which connector to reach this episode (TASTSTART) ---
-TARGET_XYZ = (7.0, 0.12, 3.2)
+# --- which connector to reach this episode (CON_T) ---
+GA_target_pos_1 = [6.840,       0.215,      3.2]    # CON_BK position
+GA_target_pos_2 = [7.020,       0.125,      3.2]    # CON_T position
+GA_target_pos_3 = [7.020,       0.026,      3.2]    # CON_A position
+GA_target_pos_4 = [7.000,       0.080,      3.2]    # CON_LS position
+GA_target_pos_5 = [7.285,       -0.100,     3.2]    # CON_B position
+GA_target_pos_6 = [6.950,       -0.325,     3.2]    # CON_ANT position
+GA_target_pos_7 = [6.700,       -0.025,     3.2]    # CON_LB position
+GA_target_pos_8 = [6.500,       0.230,      3.2]    # CON_LA position
+
+TARGET_XYZ = (7.020, 0.125, 3.2)      # CON_T
 
 # --- phased grasp (mirrors your scripted TASTSTART choreography) ---
 GRASP_PHASES = (
