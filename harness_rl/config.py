@@ -52,9 +52,9 @@ GA_target_pos_2 = [7.020,       0.125,      3.2]    # CON_T position
 GA_target_pos_3 = [7.020,       0.026,      3.2]    # CON_A position
 GA_target_pos_4 = [7.000,       0.080,      3.2]    # CON_LS position
 GA_target_pos_5 = [7.285,       -0.100,     3.2]    # CON_B position
-GA_target_pos_6 = [6.950,       -0.325,     3.2]    # CON_ANT position
-GA_target_pos_7 = [6.700,       -0.025,     3.2]    # CON_LB position
 GA_target_pos_8 = [6.500,       0.230,      3.2]    # CON_LA position
+GA_target_pos_7 = [6.700,       -0.025,     3.2]    # CON_LB position
+GA_target_pos_6 = [6.950,       -0.325,     3.2]    # CON_ANT position
 
 TARGET_XYZ = (7.020, 0.125, 3.2)      # CON_T
 
