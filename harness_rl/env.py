@@ -81,6 +81,15 @@ class HarnessPickEnv(gym.Env):
         constant_step=False,   # True -> every step commands the SAME delta magnitude (max_step_m),
                                #   using only the action's DIRECTION. (Actual travel still varies
                                #   with PID dynamics; usually you do NOT want this for RL.)
+        # ---- SMOOTH MOTION ----
+        smooth_setpoint=True,  # True  -> keep a PERSISTENT setpoint that accumulates and is
+                               #          RAMPED across the substeps, so the PID never "arrives"
+                               #          and decelerates -> continuous motion.
+                               # False -> old behaviour: setpoint = current pos + delta, which
+                               #          makes the gripper accelerate/stop once per env step.
+        max_lead=None,         # how far the setpoint may run ahead of the actual gripper
+                               #   (anti-windup). Default = 3 * max_step_m.
+        render_every=5,        # call substep_callback every N physics substeps (for smooth video)
         gravity_comp=True, stress_source="both", sigma_ref=300.0,
         # ---- REWARD WEIGHTS (tune here; new terms are off by default) ----
         w_progress=10.0,      # + move toward the target connector
@@ -116,6 +125,11 @@ class HarnessPickEnv(gym.Env):
         self.grasp_tol, self.sigma_ref = grasp_tol, sigma_ref
         self.approach_radius = approach_radius
         self.constant_step = constant_step
+        self.smooth_setpoint = smooth_setpoint
+        self.max_lead = 3.0 * max_step_m if max_lead is None else float(max_lead)
+        self.render_every = max(1, int(render_every))
+        self.substep_callback = None   # set to viewer.sync for smooth live rendering
+        self._setpoint = None          # persistent PID setpoint (set in reset)
         self.stress_source = stress_source
 
         # reward weights
@@ -281,29 +295,56 @@ class HarnessPickEnv(gym.Env):
         self._prev_dist = float(np.linalg.norm(self._gripper_xyz() - self._target_xyz()))
         self._prev_action = np.zeros(3)
         self._prev_gpos = self._gripper_xyz()
+        self._setpoint = self._gripper_xyz().copy()   # persistent PID setpoint starts here
         return self._get_obs(), {}
 
     def step(self, action):
-        # 1) apply action as a PID setpoint (plugin does the control) + gravity comp
+        # 1) turn the action into a PID setpoint, then run physics
         g = self._gripper_xyz()
-        # --- scripted last-mile handoff (like the supervisor's deterministic_move_t) ---
-        # Once the gripper is close, a P-controller finishes the approach, so RL only
-        # has to learn to get WITHIN approach_radius, not hit the exact point.
+        if self._setpoint is None:
+            self._setpoint = g.copy()
+
+        # --- scripted last-mile handoff: a controller finishes the approach ---
         if self.approach_radius > 0.0:
             d = np.linalg.norm(self._target_xyz() - g)
             if d < self.approach_radius:
-                action = np.clip((self._target_xyz() - g) / self.max_step_m, -1, 1)
-        # optional: force a constant commanded step magnitude (direction from the action)
+                ref = self._setpoint if self.smooth_setpoint else g
+                action = np.clip((self._target_xyz() - ref) / self.max_step_m, -1, 1)
+
         if self.constant_step:
             n = float(np.linalg.norm(action))
             if n > 1e-6:
-                action = np.asarray(action, float) / n     # unit direction -> |delta| = max_step_m
-        world_target = np.clip(g + np.clip(action, -1, 1) * self.max_step_m, self.lo, self.hi)
-        self.data.ctrl[self.act_ids] = world_target - self.ga_ref
-        if self.gravity_comp:
-            self.data.xfrc_applied[self.gripper_bid, 2] = self.gripper_weight
-        for _ in range(self.substeps):
+                action = np.asarray(action, float) / n
+
+        prev_sp = self._setpoint.copy()
+        if self.smooth_setpoint:
+            # PERSISTENT setpoint: it keeps moving ahead, so the PID never "arrives"
+            # and decelerates -> continuous motion instead of step-stop-step-stop.
+            sp = self._setpoint + np.clip(action, -1, 1) * self.max_step_m
+            lead = sp - g                                   # anti-windup: cap how far ahead
+            L = float(np.linalg.norm(lead))
+            if L > self.max_lead:
+                sp = g + lead / L * self.max_lead
+            self._setpoint = np.clip(sp, self.lo, self.hi)
+        else:
+            self._setpoint = np.clip(g + np.clip(action, -1, 1) * self.max_step_m,
+                                     self.lo, self.hi)
+
+        for s in range(self.substeps):
+            # RAMP the setpoint across the substeps so the PID sees a smoothly moving
+            # target rather than a jump once per env step.
+            if self.smooth_setpoint:
+                f = (s + 1) / self.substeps
+                cur = prev_sp + (self._setpoint - prev_sp) * f
+            else:
+                cur = self._setpoint
+            self.data.ctrl[self.act_ids] = cur - self.ga_ref
+            if self.gravity_comp:
+                self.data.xfrc_applied[self.gripper_bid, 2] = self.gripper_weight
             mj.mj_step(self.model, self.data)
+            # render DURING the substeps -> smooth video (one frame per env step is ~10 FPS)
+            if self.substep_callback is not None and (s % self.render_every == 0):
+                self.substep_callback()
 
         # 2) reward
         dist = float(np.linalg.norm(self._gripper_xyz() - self._target_xyz()))
