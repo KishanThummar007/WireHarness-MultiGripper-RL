@@ -8,6 +8,7 @@ the env. To watch a TRAINED policy instead, set POLICY = "harness_sac".
 Close the viewer window to stop.
 =============================================================================
 """
+
 import time
 import numpy as np
 import mujoco, mujoco.viewer
@@ -15,7 +16,7 @@ from gymnasium.utils.env_checker import check_env
 
 from harness_rl import make_env
 
-POLICY      = "harness_sac"   # None for the scripted policy (None) or "harness_sac"
+POLICY      = "harness_sac"   # None for the scripted policy
 REALTIME    = True            # sleep so playback runs at ~real speed
 RENDER_EVERY = 2              # sync the viewer every N physics substeps (lower = smoother)
 
